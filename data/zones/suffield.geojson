@@ -1,0 +1,130 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_id": "CYR229",
+        "name": "CYR229 Suffield",
+        "floor_m": 0.0,
+        "ceiling_m": 100000.0,
+        "seasonal_rule": "CYR229",
+        "handbook_issue": "TP 1820E (2026-09-03 to 2026-10-29)",
+        "source_note": "Source of Canadian Airspace Data \u00a9 2026 Transport Canada; NAV CANADA Designated Airspace Handbook, \u00a9 His Majesty the King in Right of Canada. Next issue 29 Oct 2026 must be re-checked."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -111.16666667,
+              50.3375
+            ],
+            [
+              -111.16666667,
+              50.58333333
+            ],
+            [
+              -111.08333333,
+              50.71666667
+            ],
+            [
+              -110.28333333,
+              50.71666667
+            ],
+            [
+              -110.28333333,
+              50.61666667
+            ],
+            [
+              -110.41666667,
+              50.41666667
+            ],
+            [
+              -110.46666667,
+              50.38333333
+            ],
+            [
+              -110.58888889,
+              50.38333333
+            ],
+            [
+              -110.59654722,
+              50.3375
+            ],
+            [
+              -111.16666667,
+              50.3375
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_id": "CYR230",
+        "name": "CYR230 Suffield",
+        "floor_m": 0.0,
+        "ceiling_m": 100000.0,
+        "seasonal_rule": "continuous",
+        "handbook_issue": "TP 1820E (2026-09-03 to 2026-10-29)",
+        "source_note": "Source of Canadian Airspace Data \u00a9 2026 Transport Canada; NAV CANADA Designated Airspace Handbook, \u00a9 His Majesty the King in Right of Canada. Next issue 29 Oct 2026 must be re-checked."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -111.16666667,
+              50.25
+            ],
+            [
+              -111.16666667,
+              50.3375
+            ],
+            [
+              -110.59654722,
+              50.3375
+            ],
+            [
+              -110.61666667,
+              50.21666667
+            ],
+            [
+              -111.12222222,
+              50.21666667
+            ],
+            [
+              -111.16666667,
+              50.25
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_id": "CYR231",
+        "name": "CYR231 Suffield",
+        "floor_m": 0.0,
+        "ceiling_m": 1828.8,
+        "seasonal_rule": "continuous",
+        "handbook_issue": "TP 1820E (2026-09-03 to 2026-10-29)",
+        "source_note": "Source of Canadian Airspace Data \u00a9 2026 Transport Canada; NAV CANADA Designated Airspace Handbook, \u00a9 His Majesty the King in Right of Canada. Next issue 29 Oct 2026 must be re-checked.",
+        "radius_m": 5556.0,
+        "handbook_radius": "3 miles",
+        "radius_assumption": "3 NM = 5556 m",
+        "n_vertices": 256
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -111.18333333,
+          50.26666667
+        ]
+      }
+    }
+  ]
+}

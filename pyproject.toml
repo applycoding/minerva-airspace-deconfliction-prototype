@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minerva"
+version = "0.1.0"
+authors = [{name = "Arpan Bom"}]
+requires-python = ">=3.12"
+dependencies = ["PySide6-Essentials==6.12.0", "shiboken6==6.12.0", "shapely==2.2.0", "pyproj==3.8.0", "numpy==2.5.4"]
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0", "pyinstaller==6.22.3"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+minerva = ["schema.sql"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

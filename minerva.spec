@@ -1,0 +1,20 @@
+from pathlib import Path
+from PyInstaller.utils.hooks import collect_data_files
+
+root = Path(SPECPATH)
+a = Analysis(
+    [str(root / 'src/minerva/__main__.py')],
+    pathex=[str(root / 'src')],
+    binaries=[],
+    datas=[(str(root / 'data'), 'data'),
+           (str(root / 'THIRD_PARTY_LICENSES'), 'THIRD_PARTY_LICENSES'),
+           (str(root / 'LICENSE'), '.'), (str(root / 'NOTICE.md'), '.'),
+           (str(root / 'src/minerva/schema.sql'), 'minerva')]
+          + collect_data_files('pyproj'),
+    hiddenimports=[], hookspath=[], hooksconfig={}, runtime_hooks=[], excludes=[],
+    noarchive=False,
+)
+pyz = PYZ(a.pure)
+exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name='minerva',
+          debug=False, bootloader_ignore_signals=False, strip=False, upx=False, console=True)
+coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name='minerva')

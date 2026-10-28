@@ -1,0 +1,11 @@
+Copyright (c) 2026 Arpan Bom. All rights reserved.
+
+EVALUATION-ONLY PERMISSION
+
+Permission is granted, free of charge, to read this source code and to download and run it unmodified, solely to evaluate and verify the results published in this repository (including review of a proposal that cites it).
+
+Except for that permission, no right is granted to copy, modify, merge, publish, distribute, sublicense, sell, host as a service, incorporate into another work, train models on, or otherwise use this software or its documentation. Any other use requires the prior written permission of the copyright holder.
+
+Third-party components, data and files keep their own licences, listed in NOTICE.md. This permission does not restrict the rights those licences give to anyone, including the right to replace the LGPL-licensed libraries in a distributed bundle.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.

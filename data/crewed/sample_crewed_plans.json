@@ -1,0 +1,24 @@
+{
+  "plans": [
+    {
+      "plan_id": "crewed-001",
+      "callsign": "CTEST",
+      "priority": 1,
+      "created_utc": "2026-10-28T12:00:00Z",
+      "waypoints": [
+        {
+          "lat_deg": 50.1,
+          "lon_deg": -111.4,
+          "altitude": "3000 ft",
+          "time_utc": "2026-10-28T12:00:00Z"
+        },
+        {
+          "lat_deg": 50.15,
+          "lon_deg": -111.3,
+          "altitude": "3000 ft",
+          "time_utc": "2026-10-28T12:05:00Z"
+        }
+      ]
+    }
+  ]
+}
