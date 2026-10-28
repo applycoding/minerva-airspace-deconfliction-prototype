@@ -1,11 +1,9 @@
 # Decisions required by conflicting requirements
 
-The requested boundary test requires CYR229 to use its winter ceiling at
-2026-12-01T07:00:01Z. PLAN.md section 6.1 instead explicitly keeps the summer
-ceiling until 07:01:00Z, despite also stating that summer ends at 07:00Z.
-The explicit task requirement takes precedence: the implementation transitions
-at 07:00:00Z on 1 December, independent of year. Tests assert the instants on
-both sides. No handbook accuracy beyond the supplied transcription is claimed.
+CYR229 uses the summer ceiling before 07:01:00Z on 1 December and the winter
+ceiling from that instant. The Handbook leaves the minute after 0700Z undefined;
+the summer ceiling is applied conservatively in that gap. Tests cover 06:59:59Z,
+07:00:30Z and 07:01:01Z. This follows the clarified task requirement.
 
 The installed PySide6-Essentials 6.12.0 and shiboken6 6.12.0 distributions
 contain no dist-info/licenses folders or packaged licence text. An on-disk

@@ -29,7 +29,7 @@ def test_ingest_exact_vertices():
     assert not Polygon(zones[2].polygon_utm).contains(Point(x+5600,y))
 
 
-@pytest.mark.parametrize('instant,ceiling', [('2026-03-31T23:59:59Z',4572.),('2026-04-01T00:00:00Z',100000.),('2026-12-01T06:59:59Z',100000.),('2026-12-01T07:00:01Z',4572.),('2026-12-01T07:00:00Z',4572.),('2027-04-01T00:00:00Z',100000.)])
+@pytest.mark.parametrize('instant,ceiling', [('2026-03-31T23:59:59Z',4572.),('2026-04-01T00:00:00Z',100000.),('2026-12-01T06:59:59Z',100000.),('2026-12-01T07:00:30Z',100000.),('2026-12-01T07:01:00Z',4572.),('2026-12-01T07:01:01Z',4572.),('2027-04-01T00:00:00Z',100000.)])
 def test_ingest_seasonal(instant,ceiling):
     zones=load_zones_geojson(DATA/'zones/suffield.geojson')
     assert is_zone_active(zones[0],parse_utc(instant))==(True,0.,ceiling)
@@ -90,3 +90,67 @@ def test_ingest_metar_and_weather_policy(conn):
 def test_ingest_bad_weather(tmp_path,wind):
     path=tmp_path/'bad.txt';path.write_text(f'2026-10-28T12:00:00Z/2026-10-28T13:00:00Z METAR CYXH 281200Z {wind} CAVOK\n')
     with pytest.raises(ValueError): parse_weather_text(path)
+
+
+from dataclasses import replace
+from minerva.conflict import check_zone_conflicts
+from minerva.test_rig.scenarios import build_t3_scenarios, make_plan
+from minerva.tunnel import build_tunnel
+
+
+def test_t3_isolated_zones():
+    zones = load_zones_geojson(DATA/'zones/suffield.geojson')
+    scenarios = build_t3_scenarios(zones)
+    assert len(scenarios) == 6
+    for plan,zone,expected in scenarios:
+        assert bool(check_zone_conflicts(plan,[zone])) == expected
+
+
+@pytest.mark.parametrize('zone_index',[0,1,2])
+def test_t3_tunnel_margins(zone_index):
+    zone = load_zones_geojson(DATA/'zones/suffield.geojson')[zone_index]
+    polygon = Polygon(zone.polygon_utm)
+    centre = polygon.representative_point()
+    # The nearest point on the western boundary gives a known outward direction.
+    from shapely.ops import nearest_points
+    west = Point(polygon.bounds[0]-1000,centre.y)
+    edge = nearest_points(polygon,west)[0]
+    dx,dy = west.x-edge.x,west.y-edge.y
+    norm = math.hypot(dx,dy); dx/=norm; dy/=norm
+    t = parse_utc('2026-06-01T12:00:00Z')
+    for offset,expected in ((99.,True),(101.,False)):
+        x,y = edge.x+dx*offset,edge.y+dy*offset
+        plan = make_plan('lateral',[(x,y,100,t),(x,y,100,t+10)])
+        assert bool(check_zone_conflicts(plan,[zone])) == expected
+    for altitude,expected in ((zone.ceiling_m+29.,True),(zone.ceiling_m+31.,False)):
+        plan = make_plan('vertical',[(centre.x,centre.y,altitude,t),(centre.x,centre.y,altitude,t+10)])
+        assert bool(check_zone_conflicts(plan,[zone])) == expected
+    plan.tunnel = build_tunnel(plan.plan_id,plan.waypoints,vert_margin_m=40.)
+    assert check_zone_conflicts(plan,[zone])
+    assert not check_zone_conflicts(plan,[replace(zone,override_active=False)])
+
+
+@pytest.mark.parametrize('instant,expected',[
+    ('2026-03-31T23:59:59Z',False),('2026-04-01T00:00:00Z',True),
+    ('2026-12-01T06:59:59Z',True),('2026-12-01T07:00:30Z',True),
+    ('2026-12-01T07:01:01Z',False)])
+def test_t3_transition_instants(instant,expected):
+    zone = load_zones_geojson(DATA/'zones/suffield.geojson')[0]
+    c = Polygon(zone.polygon_utm).representative_point()
+    t = parse_utc(instant)
+    plan = make_plan('season',[(c.x,c.y,5000,t),(c.x,c.y,5000,t+.01)])
+    plan.tunnel = build_tunnel(plan.plan_id,plan.waypoints,time_buf_s=0)
+    assert bool(check_zone_conflicts(plan,[zone])) == expected
+
+
+def test_t3_crossing_season_and_buffer_hold():
+    zone = load_zones_geojson(DATA/'zones/suffield.geojson')[0]
+    c = Polygon(zone.polygon_utm).representative_point()
+    t = parse_utc('2026-04-01T00:00:00Z')
+    plan = make_plan('crossing',[(c.x,c.y,5000,t-10),(c.x,c.y,5000,t+10)])
+    records = check_zone_conflicts(plan,[zone])
+    assert records and min(r.start_epoch_s for r in records) == t
+    plan = make_plan('hold',[(c.x,c.y,5000,t-20),(c.x,c.y,5000,t-5)])
+    assert check_zone_conflicts(plan,[zone])
+    plan.tunnel = build_tunnel(plan.plan_id,plan.waypoints,time_buf_s=0)
+    assert not check_zone_conflicts(plan,[zone])

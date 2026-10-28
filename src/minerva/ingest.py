@@ -52,7 +52,7 @@ def is_zone_active(zone, epoch_s):
     if zone.seasonal_rule == 'CYR229':
         dt = datetime.fromtimestamp(epoch_s, timezone.utc)
         summer = datetime(dt.year, 4, 1, tzinfo=timezone.utc).timestamp()
-        winter = datetime(dt.year, 12, 1, 7, tzinfo=timezone.utc).timestamp()
+        winter = datetime(dt.year, 12, 1, 7, 1, tzinfo=timezone.utc).timestamp()
         ceiling = 100000.0 if summer <= epoch_s < winter else 4572.0
     if zone.override_ceiling_m is not None:
         ceiling = zone.override_ceiling_m
