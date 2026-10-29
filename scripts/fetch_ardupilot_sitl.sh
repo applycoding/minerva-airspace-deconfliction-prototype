@@ -16,5 +16,5 @@ if [[ ! "$revision" =~ ^[0-9a-fA-F]{40}$ ]]; then
 fi
 fetch "https://raw.githubusercontent.com/ArduPilot/ardupilot/$revision/Tools/autotest/default_params/copter.parm" "$destination/copter.parm"
 chmod +x "$destination/arducopter"
-cat "$destination/git-version.txt"
+grep -E '^(commit |APMVERSION:)' "$destination/git-version.txt"
 sha256sum "$destination/arducopter" "$destination/git-version.txt" "$destination/copter.parm"

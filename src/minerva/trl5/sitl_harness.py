@@ -14,6 +14,15 @@ from ..live import interpolate
 from ..tunnel import build_tunnel
 
 
+
+def _version_summary(version_file):
+    """Keep only the upstream commit hash and version name from git-version.txt."""
+    if not version_file.exists():
+        return None
+    keep=[line.strip() for line in version_file.read_text(encoding='utf-8',errors='replace').splitlines()
+          if line.startswith('commit ') or line.startswith('APMVERSION:')]
+    return '\n'.join(keep) or None
+
 def availability(directory):
     if platform.system()!='Linux': return 'NOT_APPLICABLE','External SITL campaign runs on Linux only'
     folder=Path(directory or '/tmp/ardupilot-sitl')
@@ -30,7 +39,7 @@ def run_sitl(d,r,directory):
     folder=Path(directory or '/tmp/ardupilot-sitl').resolve(); binary=folder/'arducopter'
     digest=hashlib.sha256(binary.read_bytes()).hexdigest()
     version_file=folder/'git-version.txt'
-    r['metrics'].update(sitl_sha256=digest,sitl_git_version=version_file.read_text() if version_file.exists() else None,
+    r['metrics'].update(sitl_sha256=digest,sitl_git_version=_version_summary(version_file),
         pymavlink_version=importlib.metadata.version('pymavlink'),sitl_speedup=1,hard_cap_wall_s=300.)
     began=time.perf_counter(); panel=d.window.live_panel;panel.start()
     process=None; link=None; logfile=d.root/'events'/f'{d.id}_sitl_stdout.log'
