@@ -114,3 +114,61 @@ restriction above. The default user directory is read-only here, so a temporary
 database override is necessary for the existing GUI shell regression test.
 No existing test assertions were changed. Windows/frozen verification and real
 loopback T7 acceptance remain unfinished.
+
+## Slice 11
+
+Simulation only; never flown. The verification tests are engineering evidence
+for the applicant's readiness-level assessment, including TRL 5; the assessment
+itself is the applicant's responsibility. No readiness level is established here.
+
+The source rig now runs the unchanged T1–T8 acceptance files in separate test
+processes, keeps individual XML and text logs, and writes reports/test_report.json
+and reports/test_report.md. Each entry records its target, outcome, counts,
+measured test durations and acceptance output. Planner and scale measurements
+come from the acceptance tests' own output. Environment versions are read from
+installed package metadata. Failures and skips prevent a zero exit status.
+The frozen portion of T8 is labelled “checked by CI workflow”; it is not reported
+as a locally measured result. The short self-check remains separate and passed.
+
+All commands used /workspace/trivision/minerva/build/venv/bin/python, Python
+3.13.5 on Linux, with QT_QPA_PLATFORM=offscreen and a temporary MINERVA_DB_PATH.
+The final source rig returned exit 1 with 66 passed test cases and 5 failed:
+
+- T1: 100/100 planted clashes recalled, zero false alarms among 100 clean
+  scenarios, 6/6 hand fixtures passed, 74 excluded-band draws counted.
+- T2: 50/50 seeded agreements plus boundary fixtures; 3 test cases passed.
+- T3: all 27 zone and ingest test cases passed.
+- T4: 100/100 FOUND and independently validated. Median 0.031228 seconds,
+  p95 0.518325 seconds. All 14 test cases passed.
+- T5: identical conflict sets at 10, 50, 200 and 500 active plans, with five
+  timing repetitions per mode. At 200 plans, exhaustive median/p95 were
+  0.009695/0.009774 seconds and indexed median/p95 were 0.012237/0.015389 seconds.
+  At 500 plans, exhaustive median/p95 were 0.024609/0.025685 seconds and indexed
+  median/p95 were 0.033553/0.035102 seconds. Both test cases passed. The runner
+  reported an Intel Xeon processor, 8 logical CPUs and 16779640832 bytes RAM.
+- T6: 60/60 labels matched, 20 resolved and 40 escalated; all 6 tests passed.
+- T7: 2 direct-datagram tests passed. Five UDP tests failed at socket creation
+  with PermissionError, errno 1: known and unknown track matching, ambiguity
+  and source identity, drift/re-route acceptance, and altitude/time/reset.
+  No UDP accuracy or latency result is claimed.
+- T8: all 3 source tests passed, including the offscreen smoke marker and source
+  self-check. Windows platform rendering and frozen executable checks were not
+  run here and remain for CI.
+
+The full regression suite produced 99 passed and 5 failed in 40.15 seconds.
+The new report-schema test runs the real rig into a temporary directory and
+checks all eight entries, environment versions, individual measurements,
+failure details, timing summaries, report files and honest frozen-check scope.
+It passed. No existing test was edited or weakened.
+
+The acceptance command's rig stage returns nonzero because of the five blocked
+UDP tests, so its && would not start pytest. The full suite was therefore run
+separately to collect all results. The owner still needs to run the complete
+acceptance command on a host permitting loopback UDP and run Windows CI.
+The dependency lock records the supplied environment's pip freeze, not evidence
+of a Windows installation or a successful frozen build.
+
+A final regression selection excluding only the five socket-blocked cases passed:
+99 passed, 5 deselected in 38.59 seconds. This selection still ran the new report
+test, whose child rig attempted all UDP cases and preserved their failures.
+It does not turn the full T7 gate into a pass. git diff --check was clean.

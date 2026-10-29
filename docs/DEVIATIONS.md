@@ -11,11 +11,9 @@ inspection confirmed this. Without network access, the real LGPL v3 text and
 its referenced GPL v3 text were copied from /usr/share/common-licenses instead.
 Other requested licence texts, including GEOS, came from dist-info/licenses.
 
-CI runs the implemented source tests and fixed slices 1–4 self-check for now.
-The section 8 full T1–T7 rig/report step requires Slice 11 and is intentionally
-not presented as completed evidence. Windows source/build/real-platform smoke
-steps and artifact upload are provided; Windows execution remains unverified
-until the owner runs CI.
+The initial CI placeholder has been replaced in Slice 11 with the full source
+verification rig and report upload. Windows source/build/real-platform smoke
+steps remain in place; Windows execution remains unverified until CI runs.
 
 The exact outer-radius formula radius/cos(pi/256) failed the circle containment
 test at edge-midpoint tangencies because of floating-point cancellation at UTM

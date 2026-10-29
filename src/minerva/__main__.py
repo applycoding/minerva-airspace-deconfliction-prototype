@@ -14,7 +14,8 @@ def main():
         from minerva.test_rig.runner import self_check
         return self_check()
     if args.run_test_rig:
-        parser.error('Full T1–T7 test rig is scheduled for Slice 11; only --self-check is available')
+        from minerva.test_rig.runner import run_test_rig
+        return run_test_rig(args.report_dir)
     from PySide6.QtWidgets import QApplication
     from PySide6.QtCore import QTimer
     from minerva.gui.main_window import MainWindow

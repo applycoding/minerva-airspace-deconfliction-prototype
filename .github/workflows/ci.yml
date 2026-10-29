@@ -38,14 +38,16 @@ jobs:
           Remove-Item $marker -ErrorAction SilentlyContinue
           & $exe --gui-smoke --marker-file $marker
           if ($LASTEXITCODE -ne 0 -or -not (Test-Path $marker)) { throw 'GUI smoke failed' }
-      - name: Verification evidence for implemented slices
+      - name: Full verification test rig & artifact upload
         run: |
           New-Item -ItemType Directory -Force reports | Out-Null
           python -m pytest -v --junitxml=reports/slices_1_to_4.xml
           python -m minerva --self-check
+          python -m minerva --run-test-rig --report-dir reports
       - name: Zip bundle
         run: Compress-Archive -Path dist/minerva -DestinationPath dist/minerva-windows.zip
       - uses: actions/upload-artifact@v7
+        if: always()
         with:
           name: minerva-windows-evidence
           path: |
@@ -72,3 +74,9 @@ jobs:
         run: |
           python -m pytest -v
           python -m minerva --self-check
+          python -m minerva --run-test-rig --report-dir reports
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: minerva-linux-evidence
+          path: reports/

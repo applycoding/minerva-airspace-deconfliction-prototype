@@ -2,56 +2,82 @@
 
 Copyright (c) 2026 Arpan Bom. All rights reserved.
 
-Offline Windows desktop prototype. Slices 1–4 provide the desktop shell,
-coordinate transforms, domain models, atomic SQLite storage, offline ingest,
-and tunnel exports. Planning, conflict checking, live telemetry, full panels,
-and the T1–T8 verification rig are scheduled for later slices.
+MINERVA is an offline Windows desktop prototype for creating, checking and storing
+simulated flight plans around CFB Suffield. It shows an offline map, flight plan
+form, conflict table, restricted zones, tunnel exports and a live telemetry panel.
+It checks aircraft separation, restricted areas, wind and possible radio clashes.
+It is not an operational flight clearance system or a controller for aircraft or
+physical radios.
 
-The verification tests are engineering evidence offered towards the
-readiness-level assessment against the challenge's criteria. The assessment
-itself is the applicant's responsibility.
+## Install and run
 
-Simulation only; never flight-tested on real aircraft or connected to live air
-traffic control. All altitudes are metres above a single flat ground reference
-(0 m = Surface); terrain elevation is not modelled. METAR surface wind and
-max(sustained, gust) apply uniformly at all altitudes. Missing or stale weather
-requires an explicit covering operator synthetic observation or is rejected.
+For the Windows bundle, unzip the whole minerva folder and run minerva.exe.
+Keep its supporting files together. No Python installation or internet connection
+is needed for that bundle. Source use requires Python 3.12 or 3.13 and the pinned
+packages in requirements-lock.txt. With a prepared wheel folder, install offline:
 
-Static CYR229/230/231 rules use TP 1820E (3 Sep–29 Oct 2026); the 29 Oct issue
-must be re-checked. CYR231's "3 miles" is modelled as 3 NM = 5556 m with a
-conservative 256-gon. Dynamic NOTAMs require manual overrides. See
-[the boundary decision](docs/DEVIATIONS.md). Crewed import supports feet or
-metres above ground; Flight Levels are unsupported.
+```text
+python -m pip install --no-index --find-links wheelhouse -r requirements-lock.txt
+python -m pip install --no-index --no-deps --no-build-isolation -e .
+python -m minerva
+```
 
-Future telemetry will be unauthenticated: sysid is not authentication; signed
-MAVLink v2 frames will have their signatures ignored under the "not
-authenticated" policy. The planned ITU-R P.525-5 radio model is free-space
-screening between aircraft transmitters and fixed GCS receivers (2 m height,
-10 m near-field clamp), with no terrain/clutter prediction. The planned path
-maker is bounded by its grid, step size and 40000-expansion budget and does not
-promise globally optimal continuous trajectories. These later functions are
-not validated by the present self-check.
+The lock records the supplied Linux environment; prepare matching wheels for the
+target Windows/Python version, including Windows-only packaging dependencies.
+Build from source with `python -m PyInstaller --noconfirm --clean minerva.spec`.
+SQLite data defaults to %LOCALAPPDATA%/Minerva/minerva.sqlite3 on Windows and
+~/.local/share/minerva/minerva.sqlite3 on Linux. MINERVA_DB_PATH overrides it.
+See [the operator guide](docs/user_guide.md) for input formats and live watch.
 
-Use Python 3.12 or 3.13 with the pinned dependencies in pyproject.toml.
-Install with `python -m pip install -e . --no-deps --no-build-isolation`.
-Run `python -m pytest`, `python -m minerva --self-check`, or
-`python -m minerva` for the desktop shell. Linux GUI tests require
-`QT_QPA_PLATFORM=offscreen`. Build with
-`pyinstaller --noconfirm --clean minerva.spec`. The onedir bundle keeps shared
-libraries replaceable and includes data and licence texts. The SQLite path is
-MINERVA_DB_PATH, otherwise LOCALAPPDATA/Minerva on Windows or
-~/.local/share/minerva on Linux, never the install directory by default.
+## Test
 
-Offline weather files contain one explicit ISO UTC start/end window followed
-by a METAR per line. This avoids guessing year/month from METAR day numbers.
-Crewed JSON uses `plans` with `plan_id`, `callsign`, and `waypoints` containing
-`lat_deg`, `lon_deg`, `altitude` (e.g. "3000 ft") and `time_utc`.
-The text form is `PLAN id callsign`, then `WP lat lon altitude UTC` records,
-then `END`. These are bounded ICAO-style local records, not a full ICAO message
-grammar. Zone override JSON maps zone IDs to `active` and/or `ceiling_m`.
+```text
+python -m minerva --self-check
+python -m minerva --run-test-rig --report-dir reports
+python -m pytest
+```
 
-Tunnel segment time intervals include the configured time buffer, vertical
-bounds are clipped at Surface, and horizontal width is twice the half-width.
-JSON/GeoJSON epoch fields are formatted as ISO UTC at the export boundary.
-GeoJSON corridors are built in UTM metres and transformed to [longitude,
-latitude]. Each feature carries the segment's space/time bounds.
+On Linux, set QT_QPA_PLATFORM=offscreen for GUI tests. The self-check is a short,
+fixed storage/ingest/export check; it does not launch the verification rig. The
+rig runs T1–T8 source tests and writes JSON, plain English, individual test logs
+and XML results. It exits nonzero on failures or skipped checks. Frozen Windows
+checks are checked by CI workflow; source results do not establish their outcome.
+The tests need loopback UDP sockets; a restricted host can prevent those tests.
+See [actual verification results](docs/VERIFICATION.md).
+
+## Evidence and limits
+
+The verification tests are engineering evidence offered towards the readiness-level
+assessment against the challenge's criteria, including TRL 5. The assessment itself
+is the applicant's responsibility. These results do not establish TRL 5.
+
+Simulation only; never flown. The application has never been flight-tested on real
+aircraft or connected to live air traffic control.
+
+All altitudes are metres above a single flat ground reference (0 m = Surface).
+Terrain elevation is not modelled. METAR surface wind applies uniformly at every
+altitude during its validity window; limits use max(sustained, gust). Missing or
+stale weather requires explicit operator synthetic wind or the request is rejected.
+
+CYR229, CYR230 and CYR231 use static TP 1820E rules for 3 Sep–29 Oct 2026.
+The 29 Oct 2026 issue must be re-checked. CYR231's “3 miles” is modelled as
+3 NM = 5556 m inside a conservative 256-sided polygon. Dynamic NOTAMs are not
+parsed; they require manual local override files. Crewed plan import accepts
+feet or metres above ground and rejects Flight Levels (FL).
+
+MAVLink v2 telemetry is not authenticated. sysid is an identifier, not proof of
+identity. Unsigned frames are unauthenticated; signatures on signed frames are
+ignored under the “not authenticated” policy.
+
+Radio checks use ITU-R P.525-5 free-space loss between moving aircraft transmitters
+and fixed ground receivers at 2 m height, with a 10 m near-field clamp. This is a
+screening rule, not a terrain or clutter coverage prediction.
+
+The planner searches a configured grid with a step size and a 40000-expansion
+budget. It does not promise a globally optimal continuous trajectory.
+
+## Licence
+
+All rights reserved. The application is evaluation-only under [LICENSE](LICENSE).
+Third-party components retain their own licences; see [NOTICE.md](NOTICE.md) and
+THIRD_PARTY_LICENSES. The directory bundle keeps shared libraries separate.
