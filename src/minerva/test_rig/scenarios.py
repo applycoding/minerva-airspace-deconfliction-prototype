@@ -142,3 +142,85 @@ def benchmark_t5(repeats=5):
         report['counts'][count]['identical'] = True
         report['counts'][count]['conflict_count'] = len(outputs[0])
     return report
+
+
+def local_zone(x, y, half=100., ceiling=100000.):
+    from ..models import RestrictedZone
+    polygon = [(x-half,y-half),(x+half,y-half),(x+half,y+half),(x-half,y+half)]
+    return RestrictedZone('local','Simulation zone',[],polygon,0.,ceiling,'CONTINUOUS','Simulation','Simulation only',True)
+
+
+def build_t4_scenarios(seed=4404):
+    """Known-feasible corridors, climbs, winds, zone detours and reservations."""
+    rng = np.random.Generator(np.random.PCG64(seed))
+    requests = []
+    for i in range(100):
+        x,y = 500000.,5500000.
+        start = waypoint(x,y,150.,1000.)
+        goal = waypoint(x+1000+(i%3)*250,y+(i%4)*250,150.+(i%3-1)*30,0.)
+        limits = DroneLimits(40.,5.,4.,100.,30.,i%10==0)
+        radio = make_plan('radio',[(x,y,150,0),(x+250,y,150,10)]).radio
+        weather = replace(calm_weather(),wind_from_deg=float(rng.choice([0,90,180,270])),wind_speed_mps=float(rng.uniform(0,5)),gust_mps=5.)
+        zones = [local_zone(x+500,y-450,100)] if i%5==0 else []
+        plans = []
+        if i%5==1:
+            other = make_plan('reserved',[(x+600,y+1500,150,990),(x+1600,y+1500,150,1100)])
+            other.radio.freq_mhz = 5800.
+            plans = [other]
+        requests.append(dict(start_wp=start,goal_lat=goal.lat_deg,goal_lon=goal.lon_deg,goal_alt_m=goal.alt_m,limits=limits,radio=radio,objective=('shortest_time','avoid_zones','avoid_radio')[i%3],zones=zones,existing_plans=plans,weather=weather))
+    return requests
+
+
+def build_t6_scenarios():
+    """Sixty labelled cases, including immutable and physically blocked requests."""
+    cases = []
+    for i in range(60):
+        p = make_plan(f'candidate{i}',[(500000,5500000,150,1000),(501000,5500000,150,1040)])
+        p.status = 'DRAFT'
+        p.priority = 1+i%4
+        p.created_epoch_s = float(i)
+        other = make_plan(f'active{i}',[(500000,5500000,150,1000),(501000,5500000,150,1040)])
+        other.is_crewed = i%3==0
+        other.status = 'CREWED_ACTIVE' if other.is_crewed else 'APPROVED'
+        other.priority = 4
+        zones = []
+        weather = calm_weather()
+        kind = i%6
+        label = 'resolvable'
+        if kind == 1:
+            other.waypoints[-1].epoch_s = 3000.
+            other.radio.freq_mhz = 5800.
+        elif kind == 2:
+            zones = [local_zone(500000,5500000,10000)]
+            label = 'unresolvable'
+        elif kind == 3:
+            p.is_crewed = True
+            label = 'unresolvable'
+        elif kind == 4:
+            p.status = 'APPROVED'
+            label = 'unresolvable'
+        elif kind == 5:
+            weather = replace(weather,wind_speed_mps=50.,gust_mps=50.)
+            label = 'unresolvable'
+        cases.append((p,[other],zones,weather,[5800.],label))
+    return cases
+
+
+def t4_feasible_witness(request):
+    """A direct corridor witness derived from vector components, without search."""
+    import math
+    from ..coords import lonlat_to_utm12n
+    a = request['start_wp']
+    x,y = lonlat_to_utm12n(request['goal_lon'],request['goal_lat'])
+    dx,dy = x-a.x_m,y-a.y_m
+    length = math.hypot(dx,dy)
+    weather,limits = request['weather'],request['limits']
+    angle = math.radians(weather.wind_from_deg)
+    east,north = -weather.wind_speed_mps*math.sin(angle),-weather.wind_speed_mps*math.cos(angle)
+    parallel = (east*dx+north*dy)/length
+    perpendicular = (east*dy-north*dx)/length
+    speed = parallel+math.sqrt((.85*limits.max_airspeed_mps)**2-perpendicular**2)
+    dz = request['goal_alt_m']-a.alt_m
+    duration = max(length/speed,abs(dz)/(limits.max_climb_mps if dz>=0 else limits.max_descent_mps))
+    b = waypoint(x,y,request['goal_alt_m'],a.epoch_s+duration)
+    return FlightPlan('witness','WITNESS',4,'DRAFT',0.,limits,request['radio'],[a,b],None)
