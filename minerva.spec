@@ -11,7 +11,7 @@ a = Analysis(
            (str(root / 'LICENSE'), '.'), (str(root / 'NOTICE.md'), '.'),
            (str(root / 'src/minerva/schema.sql'), 'minerva')]
           + collect_data_files('pyproj'),
-    hiddenimports=[], hookspath=[], hooksconfig={}, runtime_hooks=[], excludes=[],
+    hiddenimports=['minerva.gui.map_canvas', 'minerva.gui.plan_editor', 'minerva.gui.conflict_panel', 'minerva.gui.live_panel', 'minerva.live', 'minerva.test_rig.sim'], hookspath=[], hooksconfig={}, runtime_hooks=[], excludes=[],
     noarchive=False,
 )
 pyz = PYZ(a.pure)

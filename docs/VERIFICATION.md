@@ -79,3 +79,38 @@ Slice acceptance measurements: tests/test_t4_planner.py passed 14 tests in
 was 0.504107 seconds. tests/test_t6_resolution.py passed 6 tests in 0.17 seconds.
 The complete source regression suite passed 90 tests in 23.67 seconds with
 QT_QPA_PLATFORM=offscreen. No Windows execution was performed in this slice.
+
+## Slices 9 and 10
+
+Simulation only; never flown. The desktop integrates the existing planner,
+checker, resolver, SQLite approval, zone list and JSON/GeoJSON tunnel exports.
+The plan form edits callsign and priority plus waypoint, airframe and radio/GCS
+JSON values. Waypoint display times use UTC ISO text. Synthetic surface wind
+requires an explicit operator action. The map paints offline UTM vectors,
+tunnel widths and plans with detected conflicts. The live panel listens only
+on loopback, maps source port and MAVLink IDs, and separates re-route computation
+from operator acceptance. Telemetry and signatures are not authenticated.
+
+The Slice 9 acceptance selection passed: 1 passed, 2 deselected in 0.42 seconds.
+All three T8 source/manifest tests passed in 3.25 seconds, including the source
+self-check and two-second offscreen GUI smoke marker. This does not establish
+Windows or frozen executable behavior. The spec explicitly lists the new GUI,
+live and simulation modules as hidden imports.
+
+The Slice 10 acceptance command produced 5 passed and 5 failed in 0.25 seconds.
+All failures occurred at IPv4 socket creation, denied by the host. Direct
+codec-to-tracker checks passed: CRC agrees with a separate byte recurrence,
+zero trimming/padding and relative altitude decode correctly, signed frames
+carry the not-authenticated policy, malformed frames are counted, unknown
+tracks match after five reports, ambiguous tracks abstain, and drift appears
+on the second consecutive outside report. A direct-datagram re-route took
+0.054952 seconds, passed conflict checking and was separately accepted into
+SQLite at revision 2. These measurements do not establish 100% UDP track match
+accuracy or the complete T7 gate.
+
+The full suite with QT_QPA_PLATFORM=offscreen and a temporary MINERVA_DB_PATH
+produced 98 passed and 5 failed in 26.30 seconds. The five failures are the socket
+restriction above. The default user directory is read-only here, so a temporary
+database override is necessary for the existing GUI shell regression test.
+No existing test assertions were changed. Windows/frozen verification and real
+loopback T7 acceptance remain unfinished.

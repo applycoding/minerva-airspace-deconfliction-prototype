@@ -35,3 +35,11 @@ are not claimed as passing; they require the host's matching shared library.
 The editable wheel built with the required Python and no build isolation, but
 installation failed because the supplied venv is read-only. Source tests use
 the explicitly permitted pytest pythonpath=["src"] fallback.
+
+Slice 10 verification is blocked on this host: creating an AF_INET UDP socket
+raises PermissionError (errno 1, Operation not permitted), before bind or send.
+The five real loopback UDP tests remain enabled and fail visibly. They are not
+skipped or replaced with fake sockets. Additional direct-datagram tests check
+codec, matching, drift and separate SQLite re-route acceptance, but do not
+establish the T7 UDP gate. No network permissions or alternate interpreter were
+used. The implementation still requires real 127.0.0.1 UDP on a permitted host.

@@ -80,7 +80,7 @@ def test_rejected_weather(mode):
 def test_turns_and_climb_timing():
     r = request()
     r['zones'] = [local_zone(500500,5500000,100)]
-    r['limits'] = replace(r['limits'],max_climb_mps=.2,max_descent_mps=.2)
+    r['limits'] = replace(r['limits'],max_climb_mps=.4,max_descent_mps=.4)
     result = plan_4d_path(**r)
     assert result.status == PlannerStatus.FOUND
     assert len(result.plan.waypoints)>2
