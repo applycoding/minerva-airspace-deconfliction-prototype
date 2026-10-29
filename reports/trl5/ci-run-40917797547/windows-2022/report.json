@@ -1,0 +1,3840 @@
+{
+  "schema_version": "1.0.0",
+  "campaign": "MINERVA_TRL5_VALIDATION",
+  "author": "Arpan Bom",
+  "statement": "Simulation only; never flown.",
+  "seed": 20261118,
+  "environment": {
+    "os_name": "Windows-2022Server-10.0.20348-SP0",
+    "platform_tag": "windows-2022",
+    "cpu_model": "AMD64 Family 25 Model 1 Stepping 1, AuthenticAMD",
+    "cpu_count": 4,
+    "python_version": "3.12.10",
+    "frozen_executable": true,
+    "package_versions": {
+      "PySide6-Essentials": "6.12.0",
+      "shapely": "2.2.0",
+      "pyproj": "3.8.0",
+      "numpy": "2.5.4"
+    }
+  },
+  "git_commit_sha": "e8334478cc4afcb73539517215cff9c65c86cc4a",
+  "run_url": "https://github.com/applycoding/minerva-airspace-deconfliction-prototype/actions/runs/40917797547",
+  "generated_at_utc": "2026-10-29T17:11:07.669520Z",
+  "limits": [
+    "Simulation only; never flown. No physical aircraft, autopilot, radio or live air traffic control was exercised. Outdoor range testing and Range Control integration remain for later readiness work.",
+    "Altitudes use a flat ground reference, with 750 m AMSL for SITL home. No terrain elevation, wind shear, terrain masking, multipath or antenna radiation patterns are modelled. Uniform surface wind and gust limits apply.",
+    "RF uses ITU-R P.525 free-space screening, fixed 2 m GCS receivers and a 10 m near-field clamp; it is not a coverage prediction.",
+    "Zones, crewed plans and METARs come from local files. The shipped Handbook issue ends on 29 October 2026 and needs rechecking before operational use. NOTAM overrides are manual; Flight Levels are unsupported.",
+    "Loopback MAVLink UDP is unencrypted and unauthenticated; message signing is not verified. Local socket testing does not establish physical datalink performance.",
+    "The spatial grid planner is bounded to 40000 expansions and a 9.5 s search deadline, not globally optimal. Dense intersecting traffic may require operator intervention.",
+    "These tests are engineering evidence offered towards a readiness assessment; the assessment itself is the applicant's responsibility. Windows source and frozen results require execution on Windows and cannot be inferred from Linux results."
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "S1_INGEST_PLAN_RF_DB",
+      "status": "PASS",
+      "wall_time_s": 2.505797399999892,
+      "targets": [
+        {
+          "target_id": "S1.RF_ALLOCATION",
+          "description": "RF interference resolves by channel reassignment",
+          "expected": "RADIO_CHANNEL_SHIFT",
+          "measured": "RADIO_CHANNEL_SHIFT",
+          "passed": true
+        },
+        {
+          "target_id": "S1.OPERATOR",
+          "description": "No solution escalates to an operator",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        },
+        {
+          "target_id": "S1.DETECTION",
+          "description": "Zone, crewed, RF, gust and stale-weather checks and planner rejection",
+          "expected": "100%",
+          "measured": {
+            "detected": 7,
+            "planted": 7
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S1.CREWED_IMMUTABLE",
+          "description": "Crewed records unchanged",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        },
+        {
+          "target_id": "S1.APPROVED",
+          "description": "Four accepted requests",
+          "expected": 4,
+          "measured": 4,
+          "passed": true
+        },
+        {
+          "target_id": "S1.COMPUTE",
+          "description": "Every measured planner/re-route call <=5 s",
+          "expected": 5.0,
+          "measured": 0.8830891000000065,
+          "passed": true
+        },
+        {
+          "target_id": "S1.INDEPENDENT_AUDIT",
+          "description": "Independent flight-limit, zone, space/time and RF audit has no residual conflicts",
+          "expected": 0,
+          "measured": {
+            "residual": 0,
+            "errors": {}
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S1.FALSE_CONFLICTS",
+          "description": "No conflicts reported on the independently clean approved set",
+          "expected": 0,
+          "measured": 0,
+          "passed": true
+        },
+        {
+          "target_id": "S1.CONTAINMENT",
+          "description": "Nominal paths are contained in their tunnels",
+          "expected": "100%",
+          "measured": 100.0,
+          "passed": true
+        },
+        {
+          "target_id": "S1.CLEARANCE",
+          "description": "Every active start, goal and GCS is >=500 m outside every zone",
+          "expected": 500.0,
+          "measured": 643.5816119050141,
+          "passed": true
+        },
+        {
+          "target_id": "S1.RELOAD",
+          "description": "All active fields and DB revision survive application close/reopen",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        }
+      ],
+      "metrics": {
+        "rf_resolution_action": "RADIO_CHANNEL_SHIFT",
+        "planner_max_wall_s": 0.8830891000000065,
+        "planner_p95_wall_s": 0.6647686000000022,
+        "planner_wall_s": [
+          0.8830891000000065,
+          0.004340599999977712,
+          0.009807099999989077,
+          0.0022228999998787913,
+          0.001996599999984028,
+          0.0020151999999598047
+        ],
+        "receive_to_alert_s": [],
+        "receive_to_alert_max_s": null,
+        "receive_to_alert_p95_s": null,
+        "approved_count": 4,
+        "active_count": 5,
+        "validation_errors": {},
+        "oracle_residual_conflicts": 0,
+        "space_time_hits": [],
+        "rf_hits": [],
+        "oracle_samples": 26118,
+        "max_relative_step_m": 0.9999999999996508,
+        "containment_checks": 30,
+        "tunnel_containment_percent": 100.0,
+        "db_reload_exact_match": true,
+        "clearances": [
+          {
+            "plan_id": "CREWED-101",
+            "role": "start",
+            "lat_deg": 50.16978583749294,
+            "lon_deg": -111.42017339155093,
+            "clearance_m": 14482.030358602378
+          },
+          {
+            "plan_id": "CREWED-101",
+            "role": "goal",
+            "lat_deg": 50.16983564308977,
+            "lon_deg": -111.40617096378163,
+            "clearance_m": 13644.092119732553
+          },
+          {
+            "plan_id": "CREWED-101",
+            "role": "gcs",
+            "lat_deg": 50.16978583749294,
+            "lon_deg": -111.42017339155093,
+            "clearance_m": 14482.030358602378
+          },
+          {
+            "plan_id": "UAS-S1-01",
+            "role": "start",
+            "lat_deg": 50.26649690640107,
+            "lon_deg": -111.27032576132943,
+            "clearance_m": 643.5816119050141
+          },
+          {
+            "plan_id": "UAS-S1-01",
+            "role": "goal",
+            "lat_deg": 50.216066791944705,
+            "lon_deg": -111.2198654385464,
+            "clearance_m": 643.8559096650271
+          },
+          {
+            "plan_id": "UAS-S1-01",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "UAS-S1-02",
+            "role": "start",
+            "lat_deg": 50.169785837492945,
+            "lon_deg": -111.42017339155093,
+            "clearance_m": 14482.030358601882
+          },
+          {
+            "plan_id": "UAS-S1-02",
+            "role": "goal",
+            "lat_deg": 50.16983564308977,
+            "lon_deg": -111.40617096378163,
+            "clearance_m": 13644.092119732553
+          },
+          {
+            "plan_id": "UAS-S1-02",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "UAS-S1-03",
+            "role": "start",
+            "lat_deg": 50.18147743668045,
+            "lon_deg": -111.42027594100352,
+            "clearance_m": 13819.1106770454
+          },
+          {
+            "plan_id": "UAS-S1-03",
+            "role": "goal",
+            "lat_deg": 50.18152726280978,
+            "lon_deg": -111.40627009597026,
+            "clearance_m": 12951.053166728501
+          },
+          {
+            "plan_id": "UAS-S1-03",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "UAS-S1-04",
+            "role": "start",
+            "lat_deg": 50.19496771384567,
+            "lon_deg": -111.42039435121073,
+            "clearance_m": 13136.974557716007
+          },
+          {
+            "plan_id": "UAS-S1-04",
+            "role": "goal",
+            "lat_deg": 50.19501756367876,
+            "lon_deg": -111.40638456038447,
+            "clearance_m": 12235.816840926056
+          },
+          {
+            "plan_id": "UAS-S1-04",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          }
+        ],
+        "minimum_site_clearance_m": 643.5816119050141,
+        "deconflicted_checker_conflicts": []
+      },
+      "screenshots": [
+        "screenshots/S1_INGEST_PLAN_RF_DB_after_ingest.png",
+        "screenshots/S1_INGEST_PLAN_RF_DB_rf_conflict.png",
+        "screenshots/S1_INGEST_PLAN_RF_DB_approved_tunnels.png",
+        "screenshots/S1_INGEST_PLAN_RF_DB_reloaded.png"
+      ],
+      "event_log": "events/S1_INGEST_PLAN_RF_DB.jsonl",
+      "sqlite_db": "db/S1_INGEST_PLAN_RF_DB.sqlite3"
+    },
+    {
+      "scenario_id": "S2_SWARM_16_DECONFLICTION",
+      "status": "PASS",
+      "wall_time_s": 5.523388300000079,
+      "targets": [
+        {
+          "target_id": "S2.DETECTION",
+          "description": "All independently planted conflicts detected; at least 14",
+          "expected": "100%, >=14",
+          "measured": {
+            "planted": 108,
+            "detected": 108
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S2.SIMULTANEOUS",
+          "description": "16 drones and two crewed plans have a common active interval",
+          "expected": "16+2",
+          "measured": {
+            "drones": 16,
+            "crewed": 2,
+            "overlap_s": 58.82352900505066
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S2.LATENCY",
+          "description": "Planning and allocation per plan, max <=5 s and p95 <=3 s",
+          "expected": "max <=5, p95 <=3",
+          "measured": {
+            "max_s": 1.2367047000000184,
+            "p95_s": 1.2281753249999383
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S2.CREWED_IMMUTABLE",
+          "description": "Crewed records unchanged",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        },
+        {
+          "target_id": "S2.COMPUTE",
+          "description": "Every measured planner/re-route call <=5 s",
+          "expected": 5.0,
+          "measured": 1.1922749000000294,
+          "passed": true
+        },
+        {
+          "target_id": "S2.INDEPENDENT_AUDIT",
+          "description": "Independent flight-limit, zone, space/time and RF audit has no residual conflicts",
+          "expected": 0,
+          "measured": {
+            "residual": 0,
+            "errors": {}
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S2.FALSE_CONFLICTS",
+          "description": "No conflicts reported on the independently clean approved set",
+          "expected": 0,
+          "measured": 0,
+          "passed": true
+        },
+        {
+          "target_id": "S2.CONTAINMENT",
+          "description": "Nominal paths are contained in their tunnels",
+          "expected": "100%",
+          "measured": 100.0,
+          "passed": true
+        },
+        {
+          "target_id": "S2.CLEARANCE",
+          "description": "Every active start, goal and GCS is >=500 m outside every zone",
+          "expected": 500.0,
+          "measured": 643.5816119050141,
+          "passed": true
+        },
+        {
+          "target_id": "S2.RELOAD",
+          "description": "All active fields and DB revision survive application close/reopen",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        }
+      ],
+      "metrics": {
+        "planted_conflicts": [
+          [
+            "UAS-S2-02",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-02",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-03",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-03",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-03",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-04",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-04",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-04",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-04",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-05",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-05",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-05",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-05",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-05",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-06",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-06",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-06",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-06",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-06",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-06",
+            "SPACE_TIME",
+            "UAS-S2-05"
+          ],
+          [
+            "UAS-S2-07",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-07",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-07",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-07",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-07",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-07",
+            "SPACE_TIME",
+            "UAS-S2-05"
+          ],
+          [
+            "UAS-S2-07",
+            "SPACE_TIME",
+            "UAS-S2-06"
+          ],
+          [
+            "UAS-S2-08",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-08",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-08",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-08",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-08",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-08",
+            "SPACE_TIME",
+            "UAS-S2-05"
+          ],
+          [
+            "UAS-S2-08",
+            "SPACE_TIME",
+            "UAS-S2-06"
+          ],
+          [
+            "UAS-S2-08",
+            "SPACE_TIME",
+            "UAS-S2-07"
+          ],
+          [
+            "UAS-S2-09",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-09",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-09",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-09",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-09",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-09",
+            "SPACE_TIME",
+            "UAS-S2-05"
+          ],
+          [
+            "UAS-S2-09",
+            "SPACE_TIME",
+            "UAS-S2-06"
+          ],
+          [
+            "UAS-S2-09",
+            "SPACE_TIME",
+            "UAS-S2-07"
+          ],
+          [
+            "UAS-S2-09",
+            "SPACE_TIME",
+            "UAS-S2-08"
+          ],
+          [
+            "UAS-S2-10",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-10",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-10",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-10",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-10",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-10",
+            "SPACE_TIME",
+            "UAS-S2-05"
+          ],
+          [
+            "UAS-S2-10",
+            "SPACE_TIME",
+            "UAS-S2-06"
+          ],
+          [
+            "UAS-S2-10",
+            "SPACE_TIME",
+            "UAS-S2-07"
+          ],
+          [
+            "UAS-S2-10",
+            "SPACE_TIME",
+            "UAS-S2-08"
+          ],
+          [
+            "UAS-S2-10",
+            "SPACE_TIME",
+            "UAS-S2-09"
+          ],
+          [
+            "UAS-S2-11",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-05"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-06"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-07"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-08"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-09"
+          ],
+          [
+            "UAS-S2-11",
+            "SPACE_TIME",
+            "UAS-S2-10"
+          ],
+          [
+            "UAS-S2-12",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-05"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-06"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-07"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-08"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-09"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-10"
+          ],
+          [
+            "UAS-S2-12",
+            "SPACE_TIME",
+            "UAS-S2-11"
+          ],
+          [
+            "UAS-S2-13",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-05"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-06"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-07"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-08"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-09"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-10"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-11"
+          ],
+          [
+            "UAS-S2-13",
+            "SPACE_TIME",
+            "UAS-S2-12"
+          ],
+          [
+            "UAS-S2-14",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-02"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-03"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-04"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-05"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-06"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-07"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-08"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-09"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-10"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-11"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-12"
+          ],
+          [
+            "UAS-S2-14",
+            "SPACE_TIME",
+            "UAS-S2-13"
+          ],
+          [
+            "UAS-S2-15",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-15",
+            "NO_FLY_ZONE",
+            "CYR231"
+          ],
+          [
+            "UAS-S2-16",
+            "RADIO",
+            "UAS-S2-01"
+          ],
+          [
+            "UAS-S2-16",
+            "NO_FLY_ZONE",
+            "CYR231"
+          ]
+        ],
+        "per_plan_wall_s": [
+          0.020775999999841588,
+          0.5467504000000645,
+          0.028333900000006906,
+          0.0326831999998376,
+          0.033484700000144585,
+          0.03634839999995165,
+          0.03935989999990852,
+          0.04122419999998783,
+          0.0440045000000282,
+          0.04856330000006892,
+          0.0514259999999922,
+          0.05442629999993187,
+          0.056891200000109166,
+          0.06060899999988578,
+          1.2253321999999116,
+          1.2367047000000184
+        ],
+        "simultaneous_overlap_s": 58.82352900505066,
+        "planner_max_wall_s": 1.1922749000000294,
+        "planner_p95_wall_s": 1.187590249999971,
+        "planner_wall_s": [
+          0.007497499999999491,
+          0.5281465999999,
+          0.010472700000036639,
+          0.011107199999969453,
+          0.011787200000071607,
+          0.012240499999961685,
+          0.012374700000009398,
+          0.012676000000055865,
+          0.012968999999884545,
+          0.013435099999924205,
+          0.013995999999906417,
+          0.014248200000110955,
+          0.014481599999953687,
+          0.014909700000089288,
+          1.1860286999999516,
+          1.1922749000000294
+        ],
+        "receive_to_alert_s": [],
+        "receive_to_alert_max_s": null,
+        "receive_to_alert_p95_s": null,
+        "approved_count": 16,
+        "active_count": 18,
+        "validation_errors": {},
+        "oracle_residual_conflicts": 0,
+        "space_time_hits": [],
+        "rf_hits": [],
+        "oracle_samples": 364880,
+        "max_relative_step_m": 0.9997839719034318,
+        "containment_checks": 118,
+        "tunnel_containment_percent": 100.0,
+        "db_reload_exact_match": true,
+        "clearances": [
+          {
+            "plan_id": "CREWED-201",
+            "role": "start",
+            "lat_deg": 50.23993507546189,
+            "lon_deg": -111.4207897023651,
+            "clearance_m": 11630.874309911731
+          },
+          {
+            "plan_id": "CREWED-201",
+            "role": "goal",
+            "lat_deg": 50.23998500440358,
+            "lon_deg": -111.40676673722167,
+            "clearance_m": 10646.407234932556
+          },
+          {
+            "plan_id": "CREWED-201",
+            "role": "gcs",
+            "lat_deg": 50.23993507546189,
+            "lon_deg": -111.4207897023651,
+            "clearance_m": 11630.874309911731
+          },
+          {
+            "plan_id": "CREWED-202",
+            "role": "start",
+            "lat_deg": 50.24005672524717,
+            "lon_deg": -111.38573221718782,
+            "clearance_m": 9172.867845016926
+          },
+          {
+            "plan_id": "CREWED-202",
+            "role": "goal",
+            "lat_deg": 50.24010242408105,
+            "lon_deg": -111.37170915756953,
+            "clearance_m": 8194.185160298905
+          },
+          {
+            "plan_id": "CREWED-202",
+            "role": "gcs",
+            "lat_deg": 50.24005672524717,
+            "lon_deg": -111.38573221718782,
+            "clearance_m": 9172.867845016926
+          },
+          {
+            "plan_id": "UAS-S2-01",
+            "role": "start",
+            "lat_deg": 50.14999999999999,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "UAS-S2-01",
+            "role": "goal",
+            "lat_deg": 50.150049770872194,
+            "lon_deg": -111.40600335017221,
+            "clearance_m": 14952.162767202211
+          },
+          {
+            "plan_id": "UAS-S2-01",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "UAS-S2-02",
+            "role": "start",
+            "lat_deg": 50.15359743007196,
+            "lon_deg": -111.42003151137658,
+            "clearance_m": 15498.586400882697
+          },
+          {
+            "plan_id": "UAS-S2-02",
+            "role": "goal",
+            "lat_deg": 50.15364720725562,
+            "lon_deg": -111.40603381149245,
+            "clearance_m": 14702.72504593187
+          },
+          {
+            "plan_id": "UAS-S2-02",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "UAS-S2-03",
+            "role": "start",
+            "lat_deg": 50.157194857889095,
+            "lon_deg": -111.42006302913339,
+            "clearance_m": 15263.686291381007
+          },
+          {
+            "plan_id": "UAS-S2-03",
+            "role": "goal",
+            "lat_deg": 50.15724464138513,
+            "lon_deg": -111.40606427898034,
+            "clearance_m": 14458.71069579856
+          },
+          {
+            "plan_id": "UAS-S2-03",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "UAS-S2-04",
+            "role": "start",
+            "lat_deg": 50.16079228345144,
+            "lon_deg": -111.42009455327212,
+            "clearance_m": 15033.853403886917
+          },
+          {
+            "plan_id": "UAS-S2-04",
+            "role": "goal",
+            "lat_deg": 50.16084207326082,
+            "lon_deg": -111.40609475263749,
+            "clearance_m": 14219.062498332321
+          },
+          {
+            "plan_id": "UAS-S2-04",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "UAS-S2-05",
+            "role": "start",
+            "lat_deg": 50.16438970675905,
+            "lon_deg": -111.42012608379447,
+            "clearance_m": 14808.83901959307
+          },
+          {
+            "plan_id": "UAS-S2-05",
+            "role": "goal",
+            "lat_deg": 50.164439502882686,
+            "lon_deg": -111.40612523246554,
+            "clearance_m": 13984.942335874593
+          },
+          {
+            "plan_id": "UAS-S2-05",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "UAS-S2-06",
+            "role": "start",
+            "lat_deg": 50.16798712781196,
+            "lon_deg": -111.4201576207021,
+            "clearance_m": 14589.776984224753
+          },
+          {
+            "plan_id": "UAS-S2-06",
+            "role": "goal",
+            "lat_deg": 50.168036930250835,
+            "lon_deg": -111.40615571846614,
+            "clearance_m": 13756.678652475643
+          },
+          {
+            "plan_id": "UAS-S2-06",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "UAS-S2-07",
+            "role": "start",
+            "lat_deg": 50.17158454661026,
+            "lon_deg": -111.42018916399672,
+            "clearance_m": 14376.253244407626
+          },
+          {
+            "plan_id": "UAS-S2-07",
+            "role": "goal",
+            "lat_deg": 50.17163435536528,
+            "lon_deg": -111.40618621064088,
+            "clearance_m": 13533.461665375673
+          },
+          {
+            "plan_id": "UAS-S2-07",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "UAS-S2-08",
+            "role": "start",
+            "lat_deg": 50.17518196315395,
+            "lon_deg": -111.42022071368001,
+            "clearance_m": 14168.074571893778
+          },
+          {
+            "plan_id": "UAS-S2-08",
+            "role": "goal",
+            "lat_deg": 50.175231778226085,
+            "lon_deg": -111.40621670899142,
+            "clearance_m": 13316.166925976526
+          },
+          {
+            "plan_id": "UAS-S2-08",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "UAS-S2-09",
+            "role": "start",
+            "lat_deg": 50.1787793774431,
+            "lon_deg": -111.42025226975363,
+            "clearance_m": 13966.272116700371
+          },
+          {
+            "plan_id": "UAS-S2-09",
+            "role": "goal",
+            "lat_deg": 50.17882919883327,
+            "lon_deg": -111.40624721351938,
+            "clearance_m": 13105.266965736271
+          },
+          {
+            "plan_id": "UAS-S2-09",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "UAS-S2-10",
+            "role": "start",
+            "lat_deg": 50.182376789477765,
+            "lon_deg": -111.42028383221928,
+            "clearance_m": 13770.89218744758
+          },
+          {
+            "plan_id": "UAS-S2-10",
+            "role": "goal",
+            "lat_deg": 50.18242661718693,
+            "lon_deg": -111.40627772422638,
+            "clearance_m": 12900.665065118552
+          },
+          {
+            "plan_id": "UAS-S2-10",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "UAS-S2-11",
+            "role": "start",
+            "lat_deg": 50.185974199257984,
+            "lon_deg": -111.42031540107867,
+            "clearance_m": 13581.330267820804
+          },
+          {
+            "plan_id": "UAS-S2-11",
+            "role": "goal",
+            "lat_deg": 50.18602403328709,
+            "lon_deg": -111.40630824111408,
+            "clearance_m": 12702.031557090027
+          },
+          {
+            "plan_id": "UAS-S2-11",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "UAS-S2-12",
+            "role": "start",
+            "lat_deg": 50.18957160678382,
+            "lon_deg": -111.42034697633346,
+            "clearance_m": 13398.354739375556
+          },
+          {
+            "plan_id": "UAS-S2-12",
+            "role": "goal",
+            "lat_deg": 50.1896214471338,
+            "lon_deg": -111.40633876418407,
+            "clearance_m": 12510.205117238702
+          },
+          {
+            "plan_id": "UAS-S2-12",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "UAS-S2-13",
+            "role": "start",
+            "lat_deg": 50.1931690120553,
+            "lon_deg": -111.42037855798536,
+            "clearance_m": 13222.37830058919
+          },
+          {
+            "plan_id": "UAS-S2-13",
+            "role": "goal",
+            "lat_deg": 50.193218858727114,
+            "lon_deg": -111.406369293438,
+            "clearance_m": 12325.47685438067
+          },
+          {
+            "plan_id": "UAS-S2-13",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "UAS-S2-14",
+            "role": "start",
+            "lat_deg": 50.196766415072496,
+            "lon_deg": -111.42041014603603,
+            "clearance_m": 13053.53689848563
+          },
+          {
+            "plan_id": "UAS-S2-14",
+            "role": "goal",
+            "lat_deg": 50.19681626806708,
+            "lon_deg": -111.40639982887753,
+            "clearance_m": 12148.018132458594
+          },
+          {
+            "plan_id": "UAS-S2-14",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "UAS-S2-15",
+            "role": "start",
+            "lat_deg": 50.26649690640107,
+            "lon_deg": -111.27032576132943,
+            "clearance_m": 643.5816119050141
+          },
+          {
+            "plan_id": "UAS-S2-15",
+            "role": "goal",
+            "lat_deg": 50.216066791944705,
+            "lon_deg": -111.2198654385464,
+            "clearance_m": 643.8559096650271
+          },
+          {
+            "plan_id": "UAS-S2-15",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "UAS-S2-16",
+            "role": "start",
+            "lat_deg": 50.26649690640107,
+            "lon_deg": -111.27032576132943,
+            "clearance_m": 643.5816119050141
+          },
+          {
+            "plan_id": "UAS-S2-16",
+            "role": "goal",
+            "lat_deg": 50.216066791944705,
+            "lon_deg": -111.2198654385464,
+            "clearance_m": 643.8559096650271
+          },
+          {
+            "plan_id": "UAS-S2-16",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          }
+        ],
+        "minimum_site_clearance_m": 643.5816119050141,
+        "deconflicted_checker_conflicts": []
+      },
+      "screenshots": [
+        "screenshots/S2_SWARM_16_DECONFLICTION_swarm_16_map.png",
+        "screenshots/S2_SWARM_16_DECONFLICTION_reloaded.png"
+      ],
+      "event_log": "events/S2_SWARM_16_DECONFLICTION.jsonl",
+      "sqlite_db": "db/S2_SWARM_16_DECONFLICTION.sqlite3"
+    },
+    {
+      "scenario_id": "S3_LIVE_TRACK_MATCHING",
+      "status": "PASS",
+      "wall_time_s": 31.210417800000187,
+      "targets": [
+        {
+          "target_id": "S3.KNOWN_ID",
+          "description": "All eight known tracks match on first and subsequent reports",
+          "expected": "100%",
+          "measured": {
+            "correct": 8,
+            "total": 8
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S3.UNKNOWN_K5",
+          "description": "Both unknown tracks match by K=5 without false association",
+          "expected": "2/2",
+          "measured": 2,
+          "passed": true
+        },
+        {
+          "target_id": "S3.AMBIGUOUS",
+          "description": "Both ambiguous tracks abstain after K=5",
+          "expected": "2/2",
+          "measured": 2,
+          "passed": true
+        },
+        {
+          "target_id": "S3.UDP_12",
+          "description": "Twelve simultaneous independent UDP sockets; all sent positions received",
+          "expected": 720,
+          "measured": 720,
+          "passed": true
+        },
+        {
+          "target_id": "S3.NOMINAL",
+          "description": "No drift alerts on ten nominal tracks",
+          "expected": 0,
+          "measured": 0,
+          "passed": true
+        },
+        {
+          "target_id": "S3.RECEIVE_LATENCY",
+          "description": "Receive-to-GUI latency max <=1 s and p95 <=0.25 s",
+          "expected": "max <=1, p95 <=0.25",
+          "measured": {
+            "max_s": 0.004912200000035227,
+            "p95_s": 0.004471694999915598
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S3.INDEPENDENT_AUDIT",
+          "description": "Independent flight-limit, zone, space/time and RF audit has no residual conflicts",
+          "expected": 0,
+          "measured": {
+            "residual": 0,
+            "errors": {}
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S3.FALSE_CONFLICTS",
+          "description": "No conflicts reported on the independently clean approved set",
+          "expected": 0,
+          "measured": 0,
+          "passed": true
+        },
+        {
+          "target_id": "S3.CONTAINMENT",
+          "description": "Nominal paths are contained in their tunnels",
+          "expected": "100%",
+          "measured": 100.0,
+          "passed": true
+        },
+        {
+          "target_id": "S3.CLEARANCE",
+          "description": "Every active start, goal and GCS is >=500 m outside every zone",
+          "expected": 500.0,
+          "measured": 12371.272454024585,
+          "passed": true
+        },
+        {
+          "target_id": "S3.RELOAD",
+          "description": "All active fields and DB revision survive application close/reopen",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        }
+      ],
+      "metrics": {
+        "udp_senders": 12,
+        "sent_positions": 720,
+        "received_positions": 720,
+        "flight_duration_s": 30.0,
+        "confusion_table": [
+          {
+            "sysid": 1,
+            "expected": "PLAN-S3-01",
+            "reports": 60,
+            "fifth_status": "MATCHED_KNOWN_ID"
+          },
+          {
+            "sysid": 2,
+            "expected": "PLAN-S3-02",
+            "reports": 60,
+            "fifth_status": "MATCHED_KNOWN_ID"
+          },
+          {
+            "sysid": 3,
+            "expected": "PLAN-S3-03",
+            "reports": 60,
+            "fifth_status": "MATCHED_KNOWN_ID"
+          },
+          {
+            "sysid": 4,
+            "expected": "PLAN-S3-04",
+            "reports": 60,
+            "fifth_status": "MATCHED_KNOWN_ID"
+          },
+          {
+            "sysid": 5,
+            "expected": "PLAN-S3-05",
+            "reports": 60,
+            "fifth_status": "MATCHED_KNOWN_ID"
+          },
+          {
+            "sysid": 6,
+            "expected": "PLAN-S3-06",
+            "reports": 60,
+            "fifth_status": "MATCHED_KNOWN_ID"
+          },
+          {
+            "sysid": 7,
+            "expected": "PLAN-S3-07",
+            "reports": 60,
+            "fifth_status": "MATCHED_KNOWN_ID"
+          },
+          {
+            "sysid": 8,
+            "expected": "PLAN-S3-08",
+            "reports": 60,
+            "fifth_status": "MATCHED_KNOWN_ID"
+          },
+          {
+            "sysid": 109,
+            "expected": "PLAN-S3-09",
+            "reports": 60,
+            "fifth_status": "MATCHED_TRAJECTORY"
+          },
+          {
+            "sysid": 110,
+            "expected": "PLAN-S3-10",
+            "reports": 60,
+            "fifth_status": "MATCHED_TRAJECTORY"
+          },
+          {
+            "sysid": 111,
+            "expected": "AMBIGUOUS",
+            "reports": 60,
+            "fifth_status": "AMBIGUOUS"
+          },
+          {
+            "sysid": 112,
+            "expected": "AMBIGUOUS",
+            "reports": 60,
+            "fifth_status": "AMBIGUOUS"
+          }
+        ],
+        "receive_to_gui_max_s": 0.004912200000035227,
+        "receive_to_gui_p95_s": 0.004471694999915598,
+        "receive_to_gui_s": [
+          0.002139599999964048,
+          0.002071699999987686,
+          0.002028699999982564,
+          0.0019944000000577944,
+          0.001961800000117364,
+          0.0019268999999439984,
+          0.0019004999999197025,
+          0.0018758999999590742,
+          0.0018580000000838481,
+          0.001869199999873672,
+          0.001880600000049526,
+          0.0018987999999353633,
+          0.0013822999999320018,
+          0.0013318000001163455,
+          0.0012926999997944222,
+          0.0012512999999216845,
+          0.0012285000000247237,
+          0.001195999999936248,
+          0.001170699999875069,
+          0.0011465000000043801,
+          0.0011240999999699852,
+          0.0011202999999113672,
+          0.0011953999999150255,
+          0.001205000000027212,
+          0.0013750000000527507,
+          0.001322200000004159,
+          0.0012790999999197084,
+          0.001236099999914586,
+          0.0011964000000261876,
+          0.001153299999941737,
+          0.001124800000070536,
+          0.001109399999904781,
+          0.0010884000000714877,
+          0.001082300000007308,
+          0.001082300000007308,
+          0.0010766999998850224,
+          0.0013277999998990708,
+          0.0012686000000030617,
+          0.0012429999999312713,
+          0.0012257000000772678,
+          0.0012059000000590459,
+          0.0011816999999609834,
+          0.0011590999999953056,
+          0.0011361000001670618,
+          0.00111630000014884,
+          0.0011104999998678977,
+          0.001110900000185211,
+          0.001109199999973498,
+          0.004108699999960663,
+          0.004048799999964103,
+          0.0040025999999215855,
+          0.003963200000043798,
+          0.003942399999914414,
+          0.003921400000081121,
+          0.0039097000001220295,
+          0.003898700000036115,
+          0.0038835000000290165,
+          0.0031277000000500266,
+          0.002415599999949336,
+          0.0017376999999214604,
+          0.004161199999998644,
+          0.004103400000076363,
+          0.004064799999923707,
+          0.004026900000098976,
+          0.003983599999855869,
+          0.003939199999877019,
+          0.003916800000069998,
+          0.003901300000052288,
+          0.003884299999981522,
+          0.003135800000109157,
+          0.002451899999869056,
+          0.001784799999995812,
+          0.004102400000192574,
+          0.004046900000048481,
+          0.004008200000043871,
+          0.003983199999993303,
+          0.0039612999999008025,
+          0.003938800000014453,
+          0.00392310000006546,
+          0.003907000000026528,
+          0.003884499999912805,
+          0.003116500000032829,
+          0.0024224999999660213,
+          0.0017524999998386193,
+          0.0041647000000466505,
+          0.004107200000134981,
+          0.00414390000014464,
+          0.0041103999999450025,
+          0.004088700000011158,
+          0.004069400000162204,
+          0.0040466999998898245,
+          0.004027100000030259,
+          0.0040051999999377585,
+          0.0032166000000870554,
+          0.0025304000000687665,
+          0.0018795000000864093,
+          0.004056799999943905,
+          0.00402580000013586,
+          0.004000599999926635,
+          0.003977500000019063,
+          0.00395610000009583,
+          0.003938999999945736,
+          0.004005400000096415,
+          0.004003600000032748,
+          0.0039913000000524335,
+          0.0032532000000173866,
+          0.0025619999998980347,
+          0.0018897999998443993,
+          0.004171400000132053,
+          0.004118600000083461,
+          0.0041607000000567496,
+          0.004131700000016281,
+          0.00411090000011427,
+          0.0040885000000798755,
+          0.004067899999881774,
+          0.004045500000074753,
+          0.004025199999887263,
+          0.0032412000000476837,
+          0.00258069999995314,
+          0.0019187000000329135,
+          0.00431639999987965,
+          0.0042707000000064,
+          0.004230300000017451,
+          0.0041897000000972184,
+          0.004143500000054701,
+          0.004105400000071313,
+          0.004158400000051188,
+          0.004134300000032454,
+          0.004109400000061214,
+          0.003281799999967916,
+          0.0025903000000653265,
+          0.0019244000000071537,
+          0.004144999999880383,
+          0.004083799999989424,
+          0.004136399999879359,
+          0.0041220000000521395,
+          0.004099400000086462,
+          0.004074500000115222,
+          0.004050100000085877,
+          0.004025700000056531,
+          0.004003000000011525,
+          0.003241300000127012,
+          0.00253829999996924,
+          0.0018649000001005334,
+          0.004239600000119026,
+          0.004169099999899117,
+          0.0041075999999975465,
+          0.0040873000000374304,
+          0.004061300000103074,
+          0.00403439999990951,
+          0.0040208000000347965,
+          0.004005799999958981,
+          0.00399240000001555,
+          0.003203299999995579,
+          0.002469700000119701,
+          0.0018033999999715888,
+          0.004128700000137542,
+          0.004069899999876725,
+          0.0040364000001318345,
+          0.004012200000033772,
+          0.003991099999893777,
+          0.003966700000091805,
+          0.003943299999946248,
+          0.003921700000091732,
+          0.0039008999999623484,
+          0.0031368999998449,
+          0.0024465000001328008,
+          0.0017929000000549422,
+          0.004153399999950125,
+          0.004092700000001059,
+          0.0040520999998534535,
+          0.004026500000009037,
+          0.004002399999990303,
+          0.003983699999935197,
+          0.003965199999811375,
+          0.003943799999888142,
+          0.003921300000001793,
+          0.003134200000204146,
+          0.002405899999985195,
+          0.0017381999998633546,
+          0.004308499999979176,
+          0.00425519999998869,
+          0.004213400000026013,
+          0.0041699000000789965,
+          0.0041258000001107575,
+          0.004078499999877749,
+          0.004030299999840281,
+          0.003980100000035236,
+          0.003934599999865895,
+          0.0031120999999529886,
+          0.0024144999999862193,
+          0.0017374000001382228,
+          0.004400399999894944,
+          0.004335800000035306,
+          0.004293100000040795,
+          0.0042440000001988665,
+          0.00419940000006136,
+          0.004159599999866259,
+          0.004121400000030917,
+          0.004088800000090487,
+          0.00406080000016118,
+          0.003152600000021266,
+          0.002410900000086258,
+          0.0017456999999012623,
+          0.004174499999862746,
+          0.004111700000066776,
+          0.004078799999888361,
+          0.004036100000121223,
+          0.003994300000158546,
+          0.00396679999994376,
+          0.003944499999988693,
+          0.003920099999959348,
+          0.003898899999967398,
+          0.0031043000001318433,
+          0.0024108999998588843,
+          0.0017510000000129367,
+          0.004248700000061945,
+          0.0041817000001174165,
+          0.004136999999900581,
+          0.004093899999816131,
+          0.0040504999999484426,
+          0.004011899999795787,
+          0.00397490000000289,
+          0.003950900000063484,
+          0.003925600000002305,
+          0.0031105000000479777,
+          0.002414199999975608,
+          0.001737900000080117,
+          0.00427270000000135,
+          0.0042100000000573345,
+          0.004170199999862234,
+          0.004126300000052652,
+          0.004082599999946979,
+          0.004040899999836256,
+          0.00399850000007973,
+          0.0039558999999371736,
+          0.003930799999807277,
+          0.0031105999998999323,
+          0.002430199999935212,
+          0.0017602999998871383,
+          0.0044511000000966305,
+          0.0043719999998756975,
+          0.004303899999968053,
+          0.004238400000076581,
+          0.0041735999998309126,
+          0.00411460000009356,
+          0.004086400000005597,
+          0.004054400000086389,
+          0.0040248000000246975,
+          0.003150000000005093,
+          0.0024091000000225904,
+          0.0017462000000705302,
+          0.004700599999978294,
+          0.004624100000000908,
+          0.004563700000062454,
+          0.00450049999994917,
+          0.004437100000131977,
+          0.00437299999998686,
+          0.004309500000090338,
+          0.004248100000040722,
+          0.0041971999999077525,
+          0.003271000000040658,
+          0.002455000000054497,
+          0.0017626999999720283,
+          0.004782900000009249,
+          0.0047052999998413725,
+          0.004638599999907456,
+          0.004572899999857327,
+          0.004514999999855718,
+          0.004475899999988542,
+          0.004436200000100143,
+          0.00439009999990958,
+          0.004345000000057553,
+          0.003362199999855875,
+          0.002501199999869641,
+          0.001746799999864379,
+          0.00428450000003977,
+          0.004239000000097803,
+          0.004202800000030038,
+          0.004159999999956199,
+          0.004121200000099634,
+          0.004079799999999523,
+          0.004035800000110612,
+          0.0039923000001635955,
+          0.003959500000064509,
+          0.0031459000001632376,
+          0.002459000000044398,
+          0.0017925000001923763,
+          0.004282399999965492,
+          0.004215700000031575,
+          0.004169799999999668,
+          0.004124999999930878,
+          0.004081699999915145,
+          0.004042200000185403,
+          0.004003399999874091,
+          0.003978700000061508,
+          0.003958600000032675,
+          0.003138199999966673,
+          0.0024344000000837696,
+          0.0017599000000245724,
+          0.0043633000000227185,
+          0.00433060000000296,
+          0.004291800000146395,
+          0.004258500000105414,
+          0.0042246000000432105,
+          0.004192200000034063,
+          0.004153500000029453,
+          0.004121000000168351,
+          0.004092600000149105,
+          0.0032349999999041756,
+          0.002508300000044983,
+          0.0018304999998690619,
+          0.004376599999886821,
+          0.004317399999990812,
+          0.00428949999991346,
+          0.004250400000046284,
+          0.0042061999999987165,
+          0.004166300000179035,
+          0.004125700000031429,
+          0.004083499999978812,
+          0.004061399999955029,
+          0.0032269999999243737,
+          0.002528600000005099,
+          0.0018548999998984073,
+          0.004401500000085434,
+          0.004346000000168715,
+          0.004296599999861428,
+          0.004265500000201428,
+          0.004236699999864868,
+          0.004205200000114928,
+          0.004174700000021403,
+          0.004152100000055725,
+          0.004122699999925317,
+          0.0032669999998233834,
+          0.0025107999999818276,
+          0.001833900000065114,
+          0.004520500000126049,
+          0.004440100000010716,
+          0.004374099999949976,
+          0.004309500000090338,
+          0.004265800000212039,
+          0.004317299999911484,
+          0.004293999999845255,
+          0.004255999999941196,
+          0.00422389999994266,
+          0.003340299999990748,
+          0.002567100000078426,
+          0.0018852000000606495,
+          0.004197200000135126,
+          0.0042204000001220265,
+          0.004181100000096194,
+          0.004151100000171937,
+          0.004132000000026892,
+          0.0041129999999611755,
+          0.004090700000006109,
+          0.004069299999855502,
+          0.004045500000074753,
+          0.003293700000085664,
+          0.002574299999878349,
+          0.0019112999998469604,
+          0.004360000000133368,
+          0.004307000000153494,
+          0.004262000000153421,
+          0.004216299999825424,
+          0.0041714999999840074,
+          0.004217899999957808,
+          0.0041871000000810454,
+          0.004144999999880383,
+          0.004099199999927805,
+          0.003264599999965867,
+          0.0025457000001551933,
+          0.0018678999999792723,
+          0.004882500000121581,
+          0.004912200000035227,
+          0.004881599999862374,
+          0.004841099999794096,
+          0.00480240000001686,
+          0.0047621999999591935,
+          0.0047222999999121384,
+          0.004687900000135414,
+          0.004659299999957511,
+          0.0037959999999657157,
+          0.0030695999998897605,
+          0.0023922000000311527,
+          0.00452169999994112,
+          0.004461300000002666,
+          0.004405099999985396,
+          0.004359799999974712,
+          0.004315799999858427,
+          0.004367300000012619,
+          0.004336599999987811,
+          0.004292699999950855,
+          0.0042541000000255735,
+          0.0033293999999841617,
+          0.0025911999998697866,
+          0.0018951999998080282,
+          0.004303200000094876,
+          0.004331199999796809,
+          0.004307500000095388,
+          0.004269400000112,
+          0.004239500000039698,
+          0.004211300000179108,
+          0.004184900000154812,
+          0.004155000000082509,
+          0.0041247999999995955,
+          0.0033346000000165077,
+          0.0026215000000320288,
+          0.0019445000000359869,
+          0.004347399999915069,
+          0.004272599999922022,
+          0.004237800000055358,
+          0.004203899999993155,
+          0.0041674999999941065,
+          0.00422630000002755,
+          0.004211899999972957,
+          0.004185499999948661,
+          0.004153600000108781,
+          0.003306800000018484,
+          0.002571799999941504,
+          0.0018571000000520144,
+          0.004435199999988981,
+          0.004384400000162714,
+          0.00434440000003633,
+          0.004301899999973102,
+          0.004255400000147347,
+          0.004206299999850671,
+          0.004157800000029965,
+          0.0041244000001370296,
+          0.0040947999998479645,
+          0.003188899999940986,
+          0.0024550999999064516,
+          0.0017774999998891872,
+          0.004447899999831861,
+          0.004379900000003545,
+          0.00431550000007519,
+          0.004253999999946245,
+          0.004196699999965858,
+          0.004148600000007718,
+          0.004112300000087998,
+          0.004081100000121296,
+          0.004051600000138933,
+          0.003167599999869708,
+          0.0024274999998397107,
+          0.0017559000000346714,
+          0.0045459000000391825,
+          0.004475400000046648,
+          0.0044060000000172295,
+          0.00434199999995144,
+          0.00427639999998064,
+          0.004234600000017963,
+          0.0042023999999400985,
+          0.004166799999893556,
+          0.004139800000075411,
+          0.0032542000001285487,
+          0.002464400000008027,
+          0.0017801999999846885,
+          0.004543400000102338,
+          0.004466000000093118,
+          0.0043903999999201915,
+          0.004324100000076214,
+          0.00427029999991646,
+          0.004223400000000765,
+          0.0041921000001821085,
+          0.004161699999940538,
+          0.004131700000016281,
+          0.003229700000019875,
+          0.0024351000001843204,
+          0.0017528000000766042,
+          0.004408900000044014,
+          0.0043513000000530155,
+          0.004304299999830619,
+          0.004268199999842182,
+          0.004235300000118514,
+          0.004200600000103805,
+          0.004166599999962273,
+          0.004133700000011231,
+          0.004104399999960151,
+          0.00322849999997743,
+          0.002472200000056546,
+          0.0017930999999862252,
+          0.0042166000000634085,
+          0.00413909999997486,
+          0.00410080000006019,
+          0.004067100000156643,
+          0.004043400000000474,
+          0.004011300000001938,
+          0.003971400000182257,
+          0.003941400000030626,
+          0.003907799999979034,
+          0.003104200000052515,
+          0.002391799999941213,
+          0.0017172000000300613,
+          0.004375499999923704,
+          0.0042938999999933,
+          0.004230400000096779,
+          0.004194999999981519,
+          0.0041661000000203785,
+          0.004138000000011743,
+          0.0041049999999813735,
+          0.00407350000000406,
+          0.004050599999800397,
+          0.003192900000158261,
+          0.0024310999999670457,
+          0.0017517999999654421,
+          0.004364599999917118,
+          0.004308099999889237,
+          0.004270200000064506,
+          0.004221799999868381,
+          0.004186099999969883,
+          0.004143099999964761,
+          0.0041117999999187305,
+          0.004079799999999523,
+          0.004048199999942881,
+          0.003177800000003117,
+          0.0024464000000534725,
+          0.0017770000001746666,
+          0.004370999999991909,
+          0.00431790000016008,
+          0.00426980000020194,
+          0.004222799999979543,
+          0.004177000000026965,
+          0.004124199999978373,
+          0.004078400000025795,
+          0.004030700000157594,
+          0.00399809999998979,
+          0.0031678000000283646,
+          0.0024543999998059007,
+          0.0017774000000372325,
+          0.0045330999998896004,
+          0.004471200000125464,
+          0.0044110000001182925,
+          0.00435139999990497,
+          0.004321900000149981,
+          0.004299600000194914,
+          0.004271199999948294,
+          0.004240600000002814,
+          0.004214299999830473,
+          0.0033306000000266067,
+          0.002564699999993536,
+          0.001895699999977296,
+          0.004586899999821981,
+          0.004514599999993152,
+          0.004448799999863695,
+          0.004384200000004057,
+          0.004320900000038819,
+          0.004258500000105414,
+          0.004216899999846646,
+          0.004184299999906216,
+          0.0041607000000567496,
+          0.0032590999999229098,
+          0.002449800000022151,
+          0.0017704000001685927,
+          0.00417579999998452,
+          0.004157300000088071,
+          0.0041208000000096945,
+          0.004086299999926268,
+          0.004055399999970177,
+          0.004038500000206113,
+          0.0040159999998650164,
+          0.003994599999941784,
+          0.0039756999999553955,
+          0.0031730999999126652,
+          0.002446100000042861,
+          0.001779799999894749,
+          0.004503300000124,
+          0.004456599999912214,
+          0.004403500000080385,
+          0.004356599999937316,
+          0.004305599999952392,
+          0.004251700000168057,
+          0.004204300000083094,
+          0.004153000000087559,
+          0.00411679999979242,
+          0.0031533999999737716,
+          0.002411200000096869,
+          0.0017265000001316366,
+          0.004444400000011228,
+          0.004371799999944415,
+          0.004302100000131759,
+          0.004234199999928023,
+          0.004202000000077533,
+          0.004174599999942075,
+          0.004142700000102195,
+          0.00410850000002938,
+          0.004078299999946466,
+          0.0032028999999056396,
+          0.0024408000001585606,
+          0.001755799999955343,
+          0.004530799999884039,
+          0.004471499999908701,
+          0.004401599999937389,
+          0.0043358999998872605,
+          0.004261799999994764,
+          0.004200300000093193,
+          0.004136100000096121,
+          0.004090399999995498,
+          0.0041542999999819585,
+          0.0032635000000027503,
+          0.0025306000000000495,
+          0.00185879999980898,
+          0.004190200000039113,
+          0.0041608999999880325,
+          0.004117400000041016,
+          0.004081999999925756,
+          0.004153999999971347,
+          0.004145199999811666,
+          0.004125499999872773,
+          0.004102600000123857,
+          0.004082500000095024,
+          0.0032856999998784886,
+          0.0025545000000875007,
+          0.00189049999994495,
+          0.00458969999999681,
+          0.004579300000159492,
+          0.0045356999999057734,
+          0.004492099999879429,
+          0.004450899999937974,
+          0.004407099999980346,
+          0.004365499999948952,
+          0.004313299999921583,
+          0.004375699999854987,
+          0.003463499999952546,
+          0.0027345000000877917,
+          0.002040800000031595,
+          0.004605900000115071,
+          0.004555499999923995,
+          0.004482299999835959,
+          0.004416900000023816,
+          0.004450800000086019,
+          0.0044086000000334025,
+          0.0043671000000813365,
+          0.00432490000002872,
+          0.004286999999976615,
+          0.003340299999990748,
+          0.0025585999999293563,
+          0.001878000000033353,
+          0.004471400000056747,
+          0.004430700000057186,
+          0.004365100000086386,
+          0.00430129999995188,
+          0.004239999999981592,
+          0.004195499999923413,
+          0.0041639999999461,
+          0.004131599999936952,
+          0.004195800000161398,
+          0.0033143999999083462,
+          0.002524600000015198,
+          0.00184150000018235,
+          0.004283400000076654,
+          0.004241999999976542,
+          0.0041959999998653075,
+          0.004149300000108269,
+          0.00420269999995071,
+          0.004182700000001205,
+          0.004139699999996083,
+          0.004093699999884848,
+          0.004073199999993449,
+          0.0032444000000850792,
+          0.002548200000092038,
+          0.001872600000069724,
+          0.0043940000000475266,
+          0.004338899999993373,
+          0.004271799999969517,
+          0.004235599999901751,
+          0.004191300000002229,
+          0.004156400000056237,
+          0.004122699999925317,
+          0.00408900000002177,
+          0.004065000000082364,
+          0.0031999999998788553,
+          0.0024394999998094136,
+          0.0017543999999816151,
+          0.004188699999986056,
+          0.004151999999976397,
+          0.004105999999865162,
+          0.00406210000005558,
+          0.004024699999945369,
+          0.003984499999887703,
+          0.003949900000179696,
+          0.003927499999917927,
+          0.003905799999984083,
+          0.0030931999999666004,
+          0.0023977999999260646,
+          0.001724700000067969,
+          0.004388000000062675,
+          0.004337899999882211,
+          0.004271000000017011,
+          0.0042100000000573345,
+          0.00417210000000523,
+          0.004140799999959199,
+          0.004110499999796957,
+          0.004080599999952028,
+          0.004057399999965128,
+          0.0031825999999455235,
+          0.002406700000165074,
+          0.0017250000000785803,
+          0.004468699999961245,
+          0.004397700000026816,
+          0.004330400000071677,
+          0.00427439999998569,
+          0.0042115999999623455,
+          0.004147399999965273,
+          0.0040869000001748645,
+          0.004045700000006036,
+          0.004015499999923122,
+          0.003119499999911568,
+          0.0023837999999614112,
+          0.0017139999999926658,
+          0.004450000000133514,
+          0.004381799999919167,
+          0.0043178000000807515,
+          0.004254599999967468,
+          0.0042061999999987165,
+          0.0041761999998470856,
+          0.004145800000060262,
+          0.004122800000004645,
+          0.004107900000008158,
+          0.003236499999957232,
+          0.0024650000000292493,
+          0.0017855999999483174
+        ],
+        "receive_to_alert_s": [],
+        "receive_to_alert_max_s": null,
+        "receive_to_alert_p95_s": null,
+        "approved_count": 12,
+        "active_count": 12,
+        "validation_errors": {},
+        "oracle_residual_conflicts": 0,
+        "space_time_hits": [],
+        "rf_hits": [],
+        "oracle_samples": 118800,
+        "max_relative_step_m": 5.6469741690521054e-12,
+        "containment_checks": 24,
+        "tunnel_containment_percent": 100.0,
+        "db_reload_exact_match": true,
+        "clearances": [
+          {
+            "plan_id": "PLAN-S3-01",
+            "role": "start",
+            "lat_deg": 50.14999999999999,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "PLAN-S3-01",
+            "role": "goal",
+            "lat_deg": 50.150049770872194,
+            "lon_deg": -111.40600335017221,
+            "clearance_m": 14952.162767202211
+          },
+          {
+            "plan_id": "PLAN-S3-01",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "PLAN-S3-02",
+            "role": "start",
+            "lat_deg": 50.15359743007196,
+            "lon_deg": -111.42003151137658,
+            "clearance_m": 15498.586400882697
+          },
+          {
+            "plan_id": "PLAN-S3-02",
+            "role": "goal",
+            "lat_deg": 50.15364720725562,
+            "lon_deg": -111.40603381149245,
+            "clearance_m": 14702.72504593187
+          },
+          {
+            "plan_id": "PLAN-S3-02",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "PLAN-S3-03",
+            "role": "start",
+            "lat_deg": 50.157194857889095,
+            "lon_deg": -111.42006302913339,
+            "clearance_m": 15263.686291381007
+          },
+          {
+            "plan_id": "PLAN-S3-03",
+            "role": "goal",
+            "lat_deg": 50.15724464138513,
+            "lon_deg": -111.40606427898034,
+            "clearance_m": 14458.71069579856
+          },
+          {
+            "plan_id": "PLAN-S3-03",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "PLAN-S3-04",
+            "role": "start",
+            "lat_deg": 50.16079228345144,
+            "lon_deg": -111.42009455327212,
+            "clearance_m": 15033.853403886917
+          },
+          {
+            "plan_id": "PLAN-S3-04",
+            "role": "goal",
+            "lat_deg": 50.16084207326082,
+            "lon_deg": -111.40609475263749,
+            "clearance_m": 14219.062498332321
+          },
+          {
+            "plan_id": "PLAN-S3-04",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "PLAN-S3-05",
+            "role": "start",
+            "lat_deg": 50.16438970675905,
+            "lon_deg": -111.42012608379447,
+            "clearance_m": 14808.83901959307
+          },
+          {
+            "plan_id": "PLAN-S3-05",
+            "role": "goal",
+            "lat_deg": 50.164439502882686,
+            "lon_deg": -111.40612523246554,
+            "clearance_m": 13984.942335874593
+          },
+          {
+            "plan_id": "PLAN-S3-05",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "PLAN-S3-06",
+            "role": "start",
+            "lat_deg": 50.16798712781196,
+            "lon_deg": -111.4201576207021,
+            "clearance_m": 14589.776984224753
+          },
+          {
+            "plan_id": "PLAN-S3-06",
+            "role": "goal",
+            "lat_deg": 50.168036930250835,
+            "lon_deg": -111.40615571846614,
+            "clearance_m": 13756.678652475643
+          },
+          {
+            "plan_id": "PLAN-S3-06",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "PLAN-S3-07",
+            "role": "start",
+            "lat_deg": 50.17158454661026,
+            "lon_deg": -111.42018916399672,
+            "clearance_m": 14376.253244407626
+          },
+          {
+            "plan_id": "PLAN-S3-07",
+            "role": "goal",
+            "lat_deg": 50.17163435536528,
+            "lon_deg": -111.40618621064088,
+            "clearance_m": 13533.461665375673
+          },
+          {
+            "plan_id": "PLAN-S3-07",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "PLAN-S3-08",
+            "role": "start",
+            "lat_deg": 50.17518196315395,
+            "lon_deg": -111.42022071368001,
+            "clearance_m": 14168.074571893778
+          },
+          {
+            "plan_id": "PLAN-S3-08",
+            "role": "goal",
+            "lat_deg": 50.175231778226085,
+            "lon_deg": -111.40621670899142,
+            "clearance_m": 13316.166925976526
+          },
+          {
+            "plan_id": "PLAN-S3-08",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "PLAN-S3-09",
+            "role": "start",
+            "lat_deg": 50.1787793774431,
+            "lon_deg": -111.42025226975363,
+            "clearance_m": 13966.272116700371
+          },
+          {
+            "plan_id": "PLAN-S3-09",
+            "role": "goal",
+            "lat_deg": 50.17882919883327,
+            "lon_deg": -111.40624721351938,
+            "clearance_m": 13105.266965736271
+          },
+          {
+            "plan_id": "PLAN-S3-09",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "PLAN-S3-10",
+            "role": "start",
+            "lat_deg": 50.182376789477765,
+            "lon_deg": -111.42028383221928,
+            "clearance_m": 13770.89218744758
+          },
+          {
+            "plan_id": "PLAN-S3-10",
+            "role": "goal",
+            "lat_deg": 50.18242661718693,
+            "lon_deg": -111.40627772422638,
+            "clearance_m": 12900.665065118552
+          },
+          {
+            "plan_id": "PLAN-S3-10",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "PLAN-S3-11",
+            "role": "start",
+            "lat_deg": 50.19047095831303,
+            "lon_deg": -111.42035487114664,
+            "clearance_m": 13353.831912996728
+          },
+          {
+            "plan_id": "PLAN-S3-11",
+            "role": "goal",
+            "lat_deg": 50.190520800243384,
+            "lon_deg": -111.40634639591775,
+            "clearance_m": 12463.481009782692
+          },
+          {
+            "plan_id": "PLAN-S3-11",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          },
+          {
+            "plan_id": "PLAN-S3-12",
+            "role": "start",
+            "lat_deg": 50.192269660948774,
+            "lon_deg": -111.42037066197257,
+            "clearance_m": 13266.000711196977
+          },
+          {
+            "plan_id": "PLAN-S3-12",
+            "role": "goal",
+            "lat_deg": 50.19231950604005,
+            "lon_deg": -111.40636166054469,
+            "clearance_m": 12371.272454024585
+          },
+          {
+            "plan_id": "PLAN-S3-12",
+            "role": "gcs",
+            "lat_deg": 50.19,
+            "lon_deg": -111.44,
+            "clearance_m": 14638.71159291431
+          }
+        ],
+        "minimum_site_clearance_m": 12371.272454024585,
+        "deconflicted_checker_conflicts": []
+      },
+      "screenshots": [
+        "screenshots/S3_LIVE_TRACK_MATCHING_live_panel_matching.png",
+        "screenshots/S3_LIVE_TRACK_MATCHING_reloaded.png"
+      ],
+      "event_log": "events/S3_LIVE_TRACK_MATCHING.jsonl",
+      "sqlite_db": "db/S3_LIVE_TRACK_MATCHING.sqlite3"
+    },
+    {
+      "scenario_id": "S4_CONFORMANCE_AND_PACKET_LOSS",
+      "status": "PASS",
+      "wall_time_s": 45.694513700000016,
+      "targets": [
+        {
+          "target_id": "S4.FALSE_ALERTS",
+          "description": "Nominal track remains conforming",
+          "expected": 0,
+          "measured": 0,
+          "passed": true
+        },
+        {
+          "target_id": "S4.EXIT_1",
+          "description": "LATERAL alert within 2 report intervals",
+          "expected": 2,
+          "measured": 2,
+          "passed": true
+        },
+        {
+          "target_id": "S4.EXIT_2",
+          "description": "VERTICAL alert within 2 report intervals",
+          "expected": 2,
+          "measured": 2,
+          "passed": true
+        },
+        {
+          "target_id": "S4.EXIT_3",
+          "description": "TEMPORAL alert within 2 report intervals",
+          "expected": 2,
+          "measured": 2,
+          "passed": true
+        },
+        {
+          "target_id": "S4.EXIT_4",
+          "description": "LATERAL alert within 3 report intervals",
+          "expected": 3,
+          "measured": 3,
+          "passed": true
+        },
+        {
+          "target_id": "S4.LOSS",
+          "description": "Seeded outgoing packet loss is exactly 10%",
+          "expected": 0.1,
+          "measured": 0.1,
+          "passed": true
+        },
+        {
+          "target_id": "S4.RECEIVE_LATENCY",
+          "description": "Receive-to-GUI latency max <=1 s and p95 <=0.25 s",
+          "expected": "max <=1, p95 <=0.25",
+          "measured": {
+            "max_s": 0.0010938999998870713,
+            "p95_s": 0.0009168999999928928
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S4.ALERT_LATENCY",
+          "description": "New-alert receive-to-GUI latency max <=1 s and p95 <=0.25 s",
+          "expected": "max <=1, p95 <=0.25",
+          "measured": {
+            "alerts": 4,
+            "max_s": 0.0008660999999392516,
+            "p95_s": 0.0008558999999650041
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S4.INDEPENDENT_AUDIT",
+          "description": "Independent flight-limit, zone, space/time and RF audit has no residual conflicts",
+          "expected": 0,
+          "measured": {
+            "residual": 0,
+            "errors": {}
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S4.FALSE_CONFLICTS",
+          "description": "No conflicts reported on the independently clean approved set",
+          "expected": 0,
+          "measured": 0,
+          "passed": true
+        },
+        {
+          "target_id": "S4.CONTAINMENT",
+          "description": "Nominal paths are contained in their tunnels",
+          "expected": "100%",
+          "measured": 100.0,
+          "passed": true
+        },
+        {
+          "target_id": "S4.CLEARANCE",
+          "description": "Every active start, goal and GCS is >=500 m outside every zone",
+          "expected": 500.0,
+          "measured": 13533.461665375673,
+          "passed": true
+        },
+        {
+          "target_id": "S4.RELOAD",
+          "description": "All active fields and DB revision survive application close/reopen",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        }
+      ],
+      "metrics": {
+        "detection_report_intervals": {
+          "PLAN-S4-B": 2,
+          "PLAN-S4-C": 2,
+          "PLAN-S4-D": 2,
+          "PLAN-S4-E": 3
+        },
+        "loss_sent": 81,
+        "loss_dropped": 9,
+        "loss_fraction": 0.1,
+        "seeded_dropped_indices": [
+          2,
+          5,
+          9,
+          26,
+          28,
+          40,
+          47,
+          52,
+          87
+        ],
+        "receive_to_gui_max_s": 0.0010938999998870713,
+        "receive_to_gui_p95_s": 0.0009168999999928928,
+        "receive_to_gui_s": [
+          0.0010938999998870713,
+          0.0010308000000804896,
+          0.0009915999999066116,
+          0.0009493000000020402,
+          0.0009064000000762462,
+          0.0009830000001329608,
+          0.0009363000001485489,
+          0.000900900000033289,
+          0.0008683000000928587,
+          0.0008136999999805994,
+          0.0008107000001018605,
+          0.0007462999999461317,
+          0.0007023999999091757,
+          0.0006602000000839325,
+          0.0009418999998160871,
+          0.000869800000145915,
+          0.0008144000000811502,
+          0.0007619999998951243,
+          0.0007097000000158005,
+          0.0009168999999928928,
+          0.0008801999999832333,
+          0.0008339999999407155,
+          0.0008757999999033927,
+          0.0008387999998831219,
+          0.0008046000000376807,
+          0.000743800000009287,
+          0.0006894000000556844,
+          0.0006482999999661843,
+          0.0009531999999126128,
+          0.0008964999999534484,
+          0.0008484999998472631,
+          0.0008017999998628511,
+          0.0007491000001209613,
+          0.0009133999999448861,
+          0.0008413999998992949,
+          0.0007740000000922009,
+          0.0007100999998783664,
+          0.0006561000000147033,
+          0.0009325999999418855,
+          0.000862000000097396,
+          0.000803500000074564,
+          0.000749000000041633,
+          0.0006942999998500454,
+          0.0007762000000184344,
+          0.0007175000000643195,
+          0.0006759999998848798,
+          0.0006250000001273293,
+          0.0009113999999499356,
+          0.0008526999999958207,
+          0.0007887000001574052,
+          0.0007254000001921668,
+          0.0006668999999419611,
+          0.000951400000076319,
+          0.000886499999978696,
+          0.0008268999999927473,
+          0.0007845000000088476,
+          0.0007368999999926018,
+          0.0009443999999803054,
+          0.000855200000160039,
+          0.0007940000000417058,
+          0.0007496000000628555,
+          0.000714100000095641,
+          0.0009764999999788415,
+          0.0008869999999205902,
+          0.0008285000001251319,
+          0.0007849000000987871,
+          0.0007398000000193861,
+          0.0009678999999778171,
+          0.0008889999999155407,
+          0.0008414999999786232,
+          0.0007897999998931482,
+          0.0007485999999516935,
+          0.0009112999998706073,
+          0.0008342999999513268,
+          0.0007716000000073109,
+          0.0007197000002179266,
+          0.0006691999999475229,
+          0.0009041000000706845,
+          0.0008717999999134918,
+          0.0008182999999917229,
+          0.0007567000000108237,
+          0.0007110000001375738,
+          0.0009640000000672444,
+          0.0009171000001515495,
+          0.0008668000000398024,
+          0.000825599999870974,
+          0.0007784000001720415,
+          0.0008844000001317909,
+          0.0008551000000807107,
+          0.0008162000001448177,
+          0.0007815000001301087,
+          0.0007315000000289729,
+          0.0008500000001276931,
+          0.000819300000102885,
+          0.0007729999999810389,
+          0.0007391999999981635,
+          0.000706300000047122,
+          0.0009262999999464228,
+          0.0008560999999644991,
+          0.0008072000000538537,
+          0.000755400000116424,
+          0.0007098999999470834,
+          0.0008043000000270695,
+          0.0007895999999618653,
+          0.0007559999999102729,
+          0.0007302999999865278,
+          0.0006918000001405744,
+          0.0008686000001034699,
+          0.0008092999999007588,
+          0.0008668000000398024,
+          0.0008467000000109692,
+          0.0008164999999280553,
+          0.0009069000000181404,
+          0.0008639000000130181,
+          0.0008190000000922737,
+          0.0007841999999982363,
+          0.000726999999869804,
+          0.0007345999999870401,
+          0.0007104000001163513,
+          0.0006655000001956068,
+          0.0006255000000692235,
+          0.0006041999999979453,
+          0.0007888000000093598,
+          0.0007567000000108237,
+          0.0007163000000218744,
+          0.0007639000000381202,
+          0.0007385000001249864,
+          0.000690899999881367,
+          0.0006574999999884312,
+          0.000625900000159163,
+          0.0005929999999807478,
+          0.0007888000000093598,
+          0.0008556000000226049,
+          0.00082050000014533,
+          0.0007815999999820633,
+          0.0007422999999562307,
+          0.0006481000000349013,
+          0.0005926999999701366,
+          0.0005484000000706146,
+          0.0005126000000927888,
+          0.0008639000000130181,
+          0.0007977000000209955,
+          0.0007593000000269967,
+          0.0007204999999430584,
+          0.000679200000149649,
+          0.0009339000000636588,
+          0.0008573000000069442,
+          0.0007923000000573666,
+          0.0008239999999659631,
+          0.0007751000000553177,
+          0.0008660000000872969,
+          0.0008037999998578016,
+          0.0007659999998850253,
+          0.0007293000001027394,
+          0.0006923999999344232,
+          0.0009381000002122164,
+          0.0008752999999614985,
+          0.0008262999999715248,
+          0.0007739000000128726,
+          0.0007209000000329979,
+          0.0008745000000089931,
+          0.0008341999998719984,
+          0.0007803000000876636,
+          0.0007352000000082626,
+          0.0006983000000673201,
+          0.0009583000000930042,
+          0.0008855999999468622,
+          0.0008322999999563763,
+          0.0007709000001341337,
+          0.0007310000000870787,
+          0.0009029000000282394,
+          0.0008361000000149943,
+          0.0007877000000462431,
+          0.000739999999950669,
+          0.0006795000001602602,
+          0.0008910999999898195,
+          0.0008568999999170046,
+          0.0008025000001907756,
+          0.0007458000000042375,
+          0.0006902000000081898,
+          0.0009130000000823202,
+          0.0008751000000302156,
+          0.0008152000000336557,
+          0.0007557999999789899,
+          0.0006940999999187625,
+          0.0008863999998993677,
+          0.0008399000000736123,
+          0.0007781000001614302,
+          0.0007270999999491323,
+          0.0006736000000273634,
+          0.0007852000001093984,
+          0.000753000000031534,
+          0.0007084000001214008,
+          0.0006639000000632223,
+          0.0006194000000050437,
+          0.0007173999999849912,
+          0.0006875999999920168,
+          0.0006664000000000669,
+          0.0006417999998120649,
+          0.0009129000000029919,
+          0.0008660999999392516,
+          0.0007855000001200096,
+          0.0007170999999743799,
+          0.0006710999998631451,
+          0.0009165999999822816,
+          0.0008594999999331776,
+          0.0008043000000270695,
+          0.0007535000002008019,
+          0.0007008000000041648,
+          0.0008563999999751104,
+          0.0008242000001246197,
+          0.0007981000001109351,
+          0.0007470000000466825,
+          0.0007086999999046384,
+          0.000847799999974086,
+          0.0007981999999628897,
+          0.000743800000009287,
+          0.0006905000000188011,
+          0.0006565000001046428,
+          0.0008121999999275431,
+          0.0007633000000168977,
+          0.0007238000000597822,
+          0.0006808000000546599,
+          0.000644199999896955,
+          0.0007868999998663639,
+          0.0007523000001583569,
+          0.0007175000000643195,
+          0.000693299999966257,
+          0.0006654999999682332,
+          0.000724399999853631,
+          0.0006597000001420383,
+          0.0006230999999843334,
+          0.0005888000000595639,
+          0.0009082999999918684,
+          0.0008500000001276931,
+          0.0007938999999623775,
+          0.0007423999998081854,
+          0.0006826000001183274,
+          0.0008817999998882442,
+          0.0008211000001665525,
+          0.0007857999999032472,
+          0.0007418999998662912,
+          0.0006703000001380133,
+          0.0007825000000138971,
+          0.0007411000001411594,
+          0.000709099999994578,
+          0.0006763999999748194,
+          0.0006381999999121035,
+          0.0008814999998776329,
+          0.0008420000001478911,
+          0.0007920000000467553,
+          0.0007470000000466825,
+          0.0007005999998455081,
+          0.0007381000000350468,
+          0.0006791000000703207,
+          0.0006272000000535627,
+          0.0005722000000787375,
+          0.0008826000000681233,
+          0.0008126000000174827,
+          0.000753000000031534,
+          0.000703700000030949,
+          0.0006691000000955682,
+          0.0008230999999341293,
+          0.0007717999999385938,
+          0.0007340999998177722,
+          0.0006990000001678709,
+          0.0006705999999212509,
+          0.0007808999998815125,
+          0.0007468999999673542,
+          0.0007112999999208114,
+          0.0006774999999379361,
+          0.000636399999848436,
+          0.0007912000000942498,
+          0.0007522999999309832,
+          0.000721799999837458,
+          0.0006872999999814056,
+          0.0006456999999500113,
+          0.0009301000000050408,
+          0.0008860000000368018,
+          0.0008318000000144821,
+          0.0007809000001088862,
+          0.0007218000000648317,
+          0.0008565999999063934,
+          0.0007982000001902634,
+          0.0007459999999355205,
+          0.0007232999998905143,
+          0.0006891000000450731,
+          0.0008440999999947962,
+          0.0007663999999749649,
+          0.0007320000001982407,
+          0.0007080000000314612,
+          0.0006782000000384869,
+          0.0008359000000837113,
+          0.000769699999864315,
+          0.0007291999997960374,
+          0.0006931999998869287,
+          0.000658400000020265,
+          0.0008144999999331048,
+          0.0007639000000381202,
+          0.0007153999999900407,
+          0.0006814000000758824,
+          0.0006358999999065418,
+          0.0007714000000760279,
+          0.0007289999998647545,
+          0.0007040000000415603,
+          0.0006840000000920554,
+          0.000663600000052611,
+          0.0007181999999374966,
+          0.0006734999999480351,
+          0.0006541000000197528,
+          0.0006309000000328524,
+          0.000607899999977235,
+          0.0008158000000548782,
+          0.0007626000001437205,
+          0.000722999999879903,
+          0.0006794000000809319,
+          0.0006373000001076434,
+          0.0008129000000280939,
+          0.000750599999946644,
+          0.0007078999999521329,
+          0.0006656999998995161,
+          0.0006275999999161286,
+          0.0008550000000013824,
+          0.0007875999999669148,
+          0.0007414000001517707,
+          0.0007044000001314998,
+          0.0006666999997833045,
+          0.0008445000000847358,
+          0.0007809999999608408,
+          0.0007514999999784777,
+          0.0007226999998692918,
+          0.000685800000155723,
+          0.000887899999952424,
+          0.000815100000181701,
+          0.0007492999998248706,
+          0.000697299999956158,
+          0.0006536999999298132,
+          0.0009158999998817308,
+          0.0008537999999589374,
+          0.0008067000001119595,
+          0.0007496000000628555,
+          0.000689299999976356,
+          0.0008401000000048953,
+          0.0007633999998688523,
+          0.0007097000000158005,
+          0.00068409999994401,
+          0.0006538999998610961,
+          0.0008162999999967724,
+          0.000756800000090152,
+          0.0007149999999001011,
+          0.0006822000000283879,
+          0.000645599999870683,
+          0.0008639000000130181,
+          0.0007949000000735396,
+          0.0007496999999148102,
+          0.0007169999998950516,
+          0.0006808000000546599,
+          0.0008242000001246197,
+          0.0007706999999754771,
+          0.0007319999999708671,
+          0.0006959000002098037,
+          0.000745399999914298,
+          0.0008300999998027692,
+          0.0007673999998587533,
+          0.0007317000001876295,
+          0.0006951000000299246,
+          0.0006538000000091415,
+          0.0009012000000439002,
+          0.0008350999999038322,
+          0.0008646999999655236,
+          0.0008247999999184685,
+          0.0007720999999492051,
+          0.0008808000000044558,
+          0.0008322999999563763,
+          0.0007848000000194588,
+          0.0007286000000021886,
+          0.0006760999999642081,
+          0.0008146000000124332,
+          0.0007631000000856147,
+          0.0007287999999334716,
+          0.0006968000000142638,
+          0.0006565999999565975,
+          0.000811500000054366,
+          0.0007573000000320462,
+          0.0007246000000122876,
+          0.0006876999998439715,
+          0.0006447999999181775,
+          0.0008569999999963329,
+          0.0008015999999315682,
+          0.0007640999999694031,
+          0.000721799999837458,
+          0.0006886000001031789,
+          0.0009614000000510714,
+          0.0009067000000868575,
+          0.0008622000000286789,
+          0.0008213999999497901,
+          0.0007791999998971733,
+          0.000887700000021141,
+          0.0008270000000720756,
+          0.0007894999998825369,
+          0.0007523000001583569,
+          0.0007204999999430584,
+          0.0008196000001134962,
+          0.0007585999999264459,
+          0.0007236999999804539,
+          0.0006875999999920168,
+          0.000650799999903029,
+          0.0007335000000239233,
+          0.0006949999999505962,
+          0.0006785000000490982,
+          0.0006534999999985303,
+          0.0006257000000005064,
+          0.0008205999999972846,
+          0.0007507000000259723,
+          0.0007081999999627442,
+          0.0006754999999429856,
+          0.0006478000000242901,
+          0.0008285000001251319,
+          0.0007656000000224594,
+          0.0007157999998526066,
+          0.000681499999927837,
+          0.0006464999999025167,
+          0.0008505000000695873,
+          0.0007789999999658903,
+          0.0007341000000451459,
+          0.0007057000000258995,
+          0.0006667000000106782,
+          0.0007659999998850253,
+          0.0006886999999551335,
+          0.0006444999999075662,
+          0.0006116999998084793,
+          0.0008126000000174827,
+          0.0007553000000370957,
+          0.0007330000000820291,
+          0.0007043999999041262,
+          0.0006691999999475229,
+          0.0009273000000575848,
+          0.0008471999999528634,
+          0.000803500000074564,
+          0.0007550000000264845,
+          0.0007034000000203378
+        ],
+        "receive_to_alert_s": [
+          0.0008660999999392516,
+          0.0007008000000041648,
+          0.0007981000001109351,
+          0.0007418999998662912
+        ],
+        "receive_to_alert_max_s": 0.0008660999999392516,
+        "receive_to_alert_p95_s": 0.0008558999999650041,
+        "approved_count": 5,
+        "active_count": 5,
+        "validation_errors": {},
+        "oracle_residual_conflicts": 0,
+        "space_time_hits": [],
+        "rf_hits": [],
+        "oracle_samples": 18000,
+        "max_relative_step_m": 2.531265450027667e-12,
+        "containment_checks": 10,
+        "tunnel_containment_percent": 100.0,
+        "db_reload_exact_match": true,
+        "clearances": [
+          {
+            "plan_id": "PLAN-S4-A",
+            "role": "start",
+            "lat_deg": 50.14999999999999,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "PLAN-S4-A",
+            "role": "goal",
+            "lat_deg": 50.150049770872194,
+            "lon_deg": -111.40600335017221,
+            "clearance_m": 14952.162767202211
+          },
+          {
+            "plan_id": "PLAN-S4-A",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "PLAN-S4-B",
+            "role": "start",
+            "lat_deg": 50.15539614426238,
+            "lon_deg": -111.42004726945734,
+            "clearance_m": 15380.776915290353
+          },
+          {
+            "plan_id": "PLAN-S4-B",
+            "role": "goal",
+            "lat_deg": 50.155445924602105,
+            "lon_deg": -111.40604904446533,
+            "clearance_m": 14579.988341505044
+          },
+          {
+            "plan_id": "PLAN-S4-B",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "PLAN-S4-C",
+            "role": "start",
+            "lat_deg": 50.16079228345144,
+            "lon_deg": -111.42009455327212,
+            "clearance_m": 15033.853403886917
+          },
+          {
+            "plan_id": "PLAN-S4-C",
+            "role": "goal",
+            "lat_deg": 50.16084207326082,
+            "lon_deg": -111.40609475263749,
+            "clearance_m": 14219.062498332321
+          },
+          {
+            "plan_id": "PLAN-S4-C",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "PLAN-S4-D",
+            "role": "start",
+            "lat_deg": 50.16618841756735,
+            "lon_deg": -111.42014185145003,
+            "clearance_m": 14698.811107863245
+          },
+          {
+            "plan_id": "PLAN-S4-D",
+            "role": "goal",
+            "lat_deg": 50.166238216848484,
+            "lon_deg": -111.40614047469417,
+            "clearance_m": 13870.00098196912
+          },
+          {
+            "plan_id": "PLAN-S4-D",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          },
+          {
+            "plan_id": "PLAN-S4-E",
+            "role": "start",
+            "lat_deg": 50.17158454661026,
+            "lon_deg": -111.42018916399672,
+            "clearance_m": 14376.253244407626
+          },
+          {
+            "plan_id": "PLAN-S4-E",
+            "role": "goal",
+            "lat_deg": 50.17163435536528,
+            "lon_deg": -111.40618621064088,
+            "clearance_m": 13533.461665375673
+          },
+          {
+            "plan_id": "PLAN-S4-E",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          }
+        ],
+        "minimum_site_clearance_m": 13533.461665375673,
+        "deconflicted_checker_conflicts": []
+      },
+      "screenshots": [
+        "screenshots/S4_CONFORMANCE_AND_PACKET_LOSS_conformance_alerts.png",
+        "screenshots/S4_CONFORMANCE_AND_PACKET_LOSS_reloaded.png"
+      ],
+      "event_log": "events/S4_CONFORMANCE_AND_PACKET_LOSS.jsonl",
+      "sqlite_db": "db/S4_CONFORMANCE_AND_PACKET_LOSS.sqlite3"
+    },
+    {
+      "scenario_id": "S5_DYNAMIC_REROUTE",
+      "status": "PASS",
+      "wall_time_s": 60.84629010000003,
+      "targets": [
+        {
+          "target_id": "S5.DRIFT",
+          "description": "Drift alert received before re-route",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        },
+        {
+          "target_id": "S5.DRIFT_INTERVALS",
+          "description": "Lateral drift detected within two reports",
+          "expected": 2,
+          "measured": 2,
+          "passed": true
+        },
+        {
+          "target_id": "S5.POPUP",
+          "description": "Pop-up crewed conflict detected",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        },
+        {
+          "target_id": "S5.RECOVERY",
+          "description": "Both accepted re-routes conform within two updates",
+          "expected": "2/2",
+          "measured": 2,
+          "passed": true
+        },
+        {
+          "target_id": "S5.NO_SOLUTION",
+          "description": "Box-in returns no path within five seconds",
+          "expected": "no plan, <=5 s",
+          "measured": {
+            "status": "NO_PATH_WITHIN_GRID",
+            "wall_s": 0.00597620000007737
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S5.OPERATOR",
+          "description": "Operator hold/land decision recorded; no unsafe replacement",
+          "expected": 1,
+          "measured": 1,
+          "passed": true
+        },
+        {
+          "target_id": "S5.SUPERSEDED",
+          "description": "Two accepted old reservations remain as superseded history",
+          "expected": 2,
+          "measured": 2,
+          "passed": true
+        },
+        {
+          "target_id": "S5.CREWED_IMMUTABLE",
+          "description": "Pop-up crewed plan unchanged",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        },
+        {
+          "target_id": "S5.ARRIVAL",
+          "description": "Both simulated drones fly the accepted route to within 15 m",
+          "expected": "2/2",
+          "measured": 2,
+          "passed": true
+        },
+        {
+          "target_id": "S5.COMPUTE",
+          "description": "Every measured planner/re-route call <=5 s",
+          "expected": 5.0,
+          "measured": 0.00676700000008168,
+          "passed": true
+        },
+        {
+          "target_id": "S5.RECEIVE_LATENCY",
+          "description": "Receive-to-GUI latency max <=1 s and p95 <=0.25 s",
+          "expected": "max <=1, p95 <=0.25",
+          "measured": {
+            "max_s": 0.0007060000000365108,
+            "p95_s": 0.0005652199999872209
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S5.ALERT_LATENCY",
+          "description": "New-alert receive-to-GUI latency max <=1 s and p95 <=0.25 s",
+          "expected": "max <=1, p95 <=0.25",
+          "measured": {
+            "alerts": 1,
+            "max_s": 0.0006852999999864551,
+            "p95_s": 0.0006852999999864551
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S5.INDEPENDENT_AUDIT",
+          "description": "Independent flight-limit, zone, space/time and RF audit has no residual conflicts",
+          "expected": 0,
+          "measured": {
+            "residual": 0,
+            "errors": {}
+          },
+          "passed": true
+        },
+        {
+          "target_id": "S5.FALSE_CONFLICTS",
+          "description": "No conflicts reported on the independently clean approved set",
+          "expected": 0,
+          "measured": 0,
+          "passed": true
+        },
+        {
+          "target_id": "S5.CONTAINMENT",
+          "description": "Nominal paths are contained in their tunnels",
+          "expected": "100%",
+          "measured": 100.0,
+          "passed": true
+        },
+        {
+          "target_id": "S5.CLEARANCE",
+          "description": "Every active start, goal and GCS is >=500 m outside every zone",
+          "expected": 500.0,
+          "measured": 12717.275474241816,
+          "passed": true
+        },
+        {
+          "target_id": "S5.RELOAD",
+          "description": "All active fields and DB revision survive application close/reopen",
+          "expected": true,
+          "measured": true,
+          "passed": true
+        }
+      ],
+      "metrics": {
+        "planner_max_wall_s": 0.00676700000008168,
+        "planner_p95_wall_s": 0.006724210000083985,
+        "planner_wall_s": [
+          0.006339100000104736,
+          0.00676700000008168,
+          0.00597620000007737
+        ],
+        "receive_to_gui_max_s": 0.0007060000000365108,
+        "receive_to_gui_p95_s": 0.0005652199999872209,
+        "receive_to_gui_s": [
+          0.0007060000000365108,
+          0.0006538000000091415,
+          0.0006147000001419656,
+          0.0006852999999864551,
+          0.000616900000068199,
+          0.0006668999999419611,
+          0.000677899999800502,
+          0.0006161999999676482,
+          0.000565199999982724,
+          0.00026330000014240795,
+          0.0003388000000086322,
+          0.00041800000008151983,
+          0.00039480000009461946,
+          0.00022420000004785834,
+          0.0003623000000061438,
+          0.0003429000000778615,
+          0.0004853999998886138,
+          0.00043049999999311694,
+          0.000576800000089861,
+          0.0005510000000867876,
+          0.0004415999999309861,
+          0.0004046999999900436,
+          0.0004702999999608437,
+          0.00041590000000724103,
+          0.0005109999999604042,
+          0.0004496000001381617,
+          0.000491299999794137,
+          0.00041770000007090857,
+          0.0005383999998684885,
+          0.00044980000006944465,
+          0.0005025000000387081,
+          0.0004576999999699183,
+          0.0004985000000488071,
+          0.0004490999999688938,
+          0.0004918000001907785,
+          0.0005344999999579159,
+          0.00046729999985473114,
+          0.0004209999999602587,
+          0.0004752999998345331,
+          0.0004226000000926433,
+          0.0005489000000125088,
+          0.00048730000003160967,
+          0.0005303999998886866,
+          0.0004693000000770553,
+          0.0005460999998376792,
+          0.0004745000001094013,
+          0.0005298999999467924,
+          0.0004645999999866035,
+          0.00051050000001851,
+          0.0004335000000992295,
+          0.000536399999873538,
+          0.0005068000000392203,
+          0.0005002000000331464,
+          0.0004446999998890533,
+          0.0005135000001246226,
+          0.00044410000009520445,
+          0.0004974000000856904,
+          0.00044549999984155875,
+          0.00046130000009725336,
+          0.0003999999998995918,
+          0.00047109999991334917,
+          0.0004026999999950931,
+          0.00045539999996435654,
+          0.000391400000125941,
+          0.00048199999991993536,
+          0.00042550000011942757,
+          0.0004562999999961903,
+          0.00040830000011737866,
+          0.0004484999999476713,
+          0.0003982000000632979,
+          0.0004734999999982392,
+          0.00042729999995572143,
+          0.00046469999983855814,
+          0.0004194000000552478,
+          0.00047730000005685724,
+          0.00041699999997035775,
+          0.0004994999999325955,
+          0.00044079999997848063,
+          0.00048089999995681865,
+          0.0004249999999501597,
+          0.00047110000014072284,
+          0.00042159999998148123,
+          0.00046320000001287553,
+          0.00040360000002692686,
+          0.0004612999998698797,
+          0.00040880000005927286,
+          0.0005108999998810759,
+          0.000452399999858244,
+          0.00047490000019934087,
+          0.00042680000001382723,
+          0.00045880000016040867,
+          0.00040349999994759855,
+          0.0004682999999658932,
+          0.0004155999999966298,
+          0.0005019999998694402,
+          0.0005242000001999259,
+          0.0004527000000962289,
+          0.0003939000000627857,
+          0.0005149999999503052,
+          0.0004484000000957167,
+          0.0005615999998553889,
+          0.0004668000001402106,
+          0.0005601000000297063,
+          0.00046440000005532056,
+          0.0005255999999462801,
+          0.00046939999992900994,
+          0.0005128999998760264,
+          0.0004218999999920925,
+          0.0004791000001205248,
+          0.000427700000045661,
+          0.0005435000000488799,
+          0.00047530000006190676,
+          0.0005324999999629654,
+          0.00045860000000175205,
+          0.0005482999999912863,
+          0.00044250000019019353,
+          0.0005187000001569686,
+          0.00045709999994869577,
+          0.00048709999987295305,
+          0.0004495000000588334,
+          0.0004770999998982006,
+          0.00041959999998653075,
+          0.0005315999999311316,
+          0.00044830000001638837,
+          0.0004764000000250235,
+          0.0004166999999597465,
+          0.0005665000001044973,
+          0.0005110000001877779,
+          0.0004903999999896769,
+          0.00043830000004163594,
+          0.0005166999999346444,
+          0.00043679999998857966,
+          0.0004572000000280241,
+          0.0004195000001345761,
+          0.0004530999999587948,
+          0.0004103999999642838,
+          0.00053410000009535,
+          0.00045439999985319446,
+          0.0005716999999094696,
+          0.000490000000127111,
+          0.0004080000001067674,
+          0.000382400000034977,
+          0.0005055999999967753,
+          0.0004300999999031774,
+          0.0005178000001251348,
+          0.00044139999999970314,
+          0.0004963999999745283,
+          0.00043470000014167454,
+          0.0005234999998720014,
+          0.00046320000001287553,
+          0.00045599999998557905,
+          0.00043010000013055105,
+          0.0004669999998441199,
+          0.00041749999991225195,
+          0.0005378999999265943,
+          0.0004466999998840038,
+          0.0005548999999973603,
+          0.0004720000001725566,
+          0.0005109999999604042,
+          0.0004472999999052263,
+          0.0005656000000726635,
+          0.0005121000001508946,
+          0.0005138999999871885,
+          0.00047150000000328873,
+          0.0005297000000155094,
+          0.00046910000014577236,
+          0.000541900000143869,
+          0.00045250000016494596,
+          0.0005278000000998873,
+          0.00045799999998052954,
+          0.000555800000029194,
+          0.0004905999999209598,
+          0.000511899999992238,
+          0.00045610000006490736,
+          0.0004971000000750792,
+          0.00043879999998353014,
+          0.0005329000000529049,
+          0.0004655999998703919,
+          0.0005479999999806751,
+          0.0004958000001806795,
+          0.0005129999999553547,
+          0.00044940000020687876,
+          0.0005501999999069085,
+          0.0004629000000022643,
+          0.00048510000010537624,
+          0.0004292000000987173,
+          0.00047790000007807976,
+          0.0004235999999764317,
+          0.0004943999999795778,
+          0.00043630000004668545,
+          0.0005287999999836757,
+          0.00046120000001792505,
+          0.000515700000050856,
+          0.00045839999984309543,
+          0.00047619999986636685,
+          0.00044509999997899286,
+          0.000518300000067029,
+          0.00046280000015030964,
+          0.0005361999999422551,
+          0.0004999000000225351,
+          0.0004904000002170505,
+          0.0004469000000426604,
+          0.0004959000000326341,
+          0.0004722999999557942,
+          0.0004794999999830907,
+          0.00044210000010025396,
+          0.00047100000006139453,
+          0.00042690000009315554,
+          0.0004999999998744897,
+          0.0004681999998865649,
+          0.00048770000012154924,
+          0.00045279999994818354,
+          0.0004801000000043132,
+          0.0004337999998824671,
+          0.0004885000000740547,
+          0.00044150000007903145,
+          0.0005155999999715277,
+          0.0005416999999852123,
+          0.0005101000001559441,
+          0.0004516999999850668,
+          0.000473000000056345,
+          0.00044769999999516585,
+          0.00047990000007303024,
+          0.00044780000007449416,
+          0.000522499999988213,
+          0.00048720000017965504,
+          0.0004791999999724794,
+          0.0004214999999021529,
+          0.0004624000000603701,
+          0.00042329999996582046,
+          0.0004718000000139,
+          0.0004314000000249507,
+          0.0004822999999305466,
+          0.0004444000001058157,
+          0.0004880000001321605,
+          0.000438100000110353,
+          0.00047369999992952216,
+          0.0004349000000729575,
+          0.00045750000003863533,
+          0.0004155999999966298
+        ],
+        "receive_to_alert_s": [
+          0.0006852999999864551
+        ],
+        "receive_to_alert_max_s": 0.0006852999999864551,
+        "receive_to_alert_p95_s": 0.0006852999999864551,
+        "approved_count": 2,
+        "active_count": 4,
+        "validation_errors": {},
+        "oracle_residual_conflicts": 0,
+        "space_time_hits": [],
+        "rf_hits": [],
+        "oracle_samples": 8074,
+        "max_relative_step_m": 0.9999509803922628,
+        "containment_checks": 9,
+        "tunnel_containment_percent": 100.0,
+        "db_reload_exact_match": true,
+        "clearances": [
+          {
+            "plan_id": "7bb4dbe24eec4ff18db977daf7184628",
+            "role": "start",
+            "lat_deg": 50.1501828,
+            "lon_deg": -111.3920074,
+            "clearance_m": 14178.59719050587
+          },
+          {
+            "plan_id": "7bb4dbe24eec4ff18db977daf7184628",
+            "role": "goal",
+            "lat_deg": 50.15909145704409,
+            "lon_deg": -111.39208020110732,
+            "clearance_m": 13546.496006521915
+          },
+          {
+            "plan_id": "7bb4dbe24eec4ff18db977daf7184628",
+            "role": "gcs",
+            "lat_deg": 50.15,
+            "lon_deg": -111.42,
+            "clearance_m": 15738.956433529322
+          },
+          {
+            "plan_id": "CREWED-POPUP-501",
+            "role": "start",
+            "lat_deg": 50.15547018214794,
+            "lon_deg": -111.39904991742894,
+            "clearance_m": 14186.80841606578
+          },
+          {
+            "plan_id": "CREWED-POPUP-501",
+            "role": "goal",
+            "lat_deg": 50.155517431984634,
+            "lon_deg": -111.38505163510592,
+            "clearance_m": 13414.752590115526
+          },
+          {
+            "plan_id": "CREWED-POPUP-501",
+            "role": "gcs",
+            "lat_deg": 50.15547018214794,
+            "lon_deg": -111.39904991742894,
+            "clearance_m": 14186.80841606578
+          },
+          {
+            "plan_id": "CREWED-WALL-502",
+            "role": "start",
+            "lat_deg": 50.150188963374816,
+            "lon_deg": -111.36401317477655,
+            "clearance_m": 12717.983998243353
+          },
+          {
+            "plan_id": "CREWED-WALL-502",
+            "role": "goal",
+            "lat_deg": 50.15018900724142,
+            "lon_deg": -111.36399917799757,
+            "clearance_m": 12717.275474241816
+          },
+          {
+            "plan_id": "CREWED-WALL-502",
+            "role": "gcs",
+            "lat_deg": 50.150188963374816,
+            "lon_deg": -111.36401317477655,
+            "clearance_m": 12717.983998243353
+          },
+          {
+            "plan_id": "d27eb95a7d8b4c39b1930c78ca0c262a",
+            "role": "start",
+            "lat_deg": 50.177746,
+            "lon_deg": -111.420005,
+            "clearance_m": 14009.26449139617
+          },
+          {
+            "plan_id": "d27eb95a7d8b4c39b1930c78ca0c262a",
+            "role": "goal",
+            "lat_deg": 50.17702066022748,
+            "lon_deg": -111.40903286970179,
+            "clearance_m": 13380.415280316769
+          },
+          {
+            "plan_id": "d27eb95a7d8b4c39b1930c78ca0c262a",
+            "role": "gcs",
+            "lat_deg": 50.17,
+            "lon_deg": -111.43,
+            "clearance_m": 15064.226484199815
+          }
+        ],
+        "minimum_site_clearance_m": 12717.275474241816,
+        "deconflicted_checker_conflicts": []
+      },
+      "screenshots": [
+        "screenshots/S5_DYNAMIC_REROUTE_popup_conflict.png",
+        "screenshots/S5_DYNAMIC_REROUTE_reroute_accepted.png",
+        "screenshots/S5_DYNAMIC_REROUTE_operator_escalation.png",
+        "screenshots/S5_DYNAMIC_REROUTE_reloaded.png"
+      ],
+      "event_log": "events/S5_DYNAMIC_REROUTE.jsonl",
+      "sqlite_db": "db/S5_DYNAMIC_REROUTE.sqlite3"
+    },
+    {
+      "scenario_id": "S6_ARDUPILOT_SITL",
+      "status": "NOT_APPLICABLE",
+      "wall_time_s": 0.001766200000020035,
+      "targets": [],
+      "metrics": {},
+      "screenshots": [],
+      "event_log": "events/S6_ARDUPILOT_SITL.jsonl",
+      "sqlite_db": null,
+      "reason": "External SITL campaign runs on Linux only"
+    }
+  ],
+  "selected_scenarios": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6"
+  ],
+  "summary_counts": {
+    "total_scenarios": 6,
+    "passed": 5,
+    "failed": 0,
+    "not_run": 0,
+    "not_applicable": 1
+  },
+  "overall_status": "PASS",
+  "verdict_line": "All TRL 5 scenario targets met",
+  "outcome_traceability": {
+    "EO1": {
+      "status": "PASS",
+      "scenarios": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ]
+    },
+    "EO2": {
+      "status": "PASS",
+      "scenarios": [
+        "S1",
+        "S2",
+        "S6"
+      ]
+    },
+    "EO3": {
+      "status": "PASS",
+      "scenarios": [
+        "S1",
+        "S2",
+        "S5",
+        "S6"
+      ]
+    },
+    "EO4": {
+      "status": "PASS",
+      "scenarios": [
+        "S1",
+        "S2",
+        "S5"
+      ]
+    },
+    "EO5": {
+      "status": "PASS",
+      "scenarios": [
+        "S1",
+        "S2",
+        "S5",
+        "S6"
+      ]
+    },
+    "EO6": {
+      "status": "PASS",
+      "scenarios": [
+        "S1",
+        "S2",
+        "S5"
+      ]
+    },
+    "EO7": {
+      "status": "PASS",
+      "scenarios": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6"
+      ]
+    },
+    "X1": {
+      "status": "PASS",
+      "scenarios": [
+        "S4",
+        "S5",
+        "S6"
+      ]
+    },
+    "X2": {
+      "status": "PASS",
+      "scenarios": [
+        "S3",
+        "S4",
+        "S5",
+        "S6"
+      ]
+    }
+  }
+}
