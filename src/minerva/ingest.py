@@ -25,9 +25,9 @@ def parse_utc(value):
 
 
 def load_zones_geojson(path, overrides_path=None):
-    overrides = json.loads(Path(overrides_path).read_text()) if overrides_path else {}
+    overrides = json.loads(Path(overrides_path).read_text(encoding='utf-8')) if overrides_path else {}
     zones = []
-    for feature in json.loads(Path(path).read_text())['features']:
+    for feature in json.loads(Path(path).read_text(encoding='utf-8'))['features']:
         p, g = feature['properties'], feature['geometry']
         if g['type'] == 'Point':
             utm = build_conservative_circle_utm(*g['coordinates'], p['radius_m'], 256)
@@ -72,7 +72,7 @@ def _altitude(value, unit=None):
 
 def load_crewed_plans(path):
     """JSON plans or text records: PLAN id callsign; WP lat lon altitude UTC; END."""
-    raw = Path(path).read_text()
+    raw = Path(path).read_text(encoding='utf-8')
     if raw.lstrip().startswith(('{', '[')):
         data = json.loads(raw)
         records = data['plans'] if isinstance(data, dict) else data
@@ -118,7 +118,7 @@ def parse_weather_text(path):
     the METAR day-of-month. Variable direction is rejected for a vector model.
     """
     observations = []
-    for line in Path(path).read_text().splitlines():
+    for line in Path(path).read_text(encoding='utf-8').splitlines():
         if not line.strip() or line.lstrip().startswith('#'):
             continue
         window, metar = line.split(maxsplit=1)

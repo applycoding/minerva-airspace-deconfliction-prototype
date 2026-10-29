@@ -35,7 +35,7 @@ def self_check():
                 raise RuntimeError('Persistence round trip failed')
             export_tunnel_json(plan.tunnel, path / 'tunnel.json')
             export_tunnel_geojson(plan, path / 'tunnel.geojson')
-            if len(json.loads((path / 'tunnel.geojson').read_text())['features']) != 1:
+            if len(json.loads((path / 'tunnel.geojson').read_text(encoding='utf-8'))['features']) != 1:
                 raise RuntimeError('Tunnel export check failed')
         finally:
             conn.close()
@@ -97,7 +97,7 @@ def run_test_rig(report_dir):
     with tempfile.TemporaryDirectory() as directory:
         env = dict(os.environ, QT_QPA_PLATFORM='offscreen',
                    MINERVA_DB_PATH=str(Path(directory) / 'rig.sqlite3'),
-                   PYTHONPATH=str(root / 'src'), PYTEST_DISABLE_PLUGIN_AUTOLOAD='1')
+                   PYTHONPATH=str(root / 'src'), PYTEST_DISABLE_PLUGIN_AUTOLOAD='1', PYTHONUTF8='1', PYTHONIOENCODING='utf-8')
         env.pop('PYTEST_ADDOPTS', None)
         for index, ((name, gate), suffix) in enumerate(zip(GATES, FILES), 1):
             test_id = f'T{index}'
@@ -108,7 +108,7 @@ def run_test_rig(report_dir):
                 completed = subprocess.run(
                     [sys.executable, '-m', 'pytest', '-q', '-s',
                      f'tests/test_t{index}_{suffix}.py', f'--junitxml={xml_path}'],
-                    cwd=root, env=env, capture_output=True, text=True, timeout=1800)
+                    cwd=root, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=1800)
                 output = completed.stdout + completed.stderr
                 exit_code = completed.returncode
             except subprocess.TimeoutExpired as error:

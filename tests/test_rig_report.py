@@ -6,7 +6,7 @@ from minerva.test_rig.runner import run_test_rig
 
 def test_rig_report(tmp_path):
     code = run_test_rig(tmp_path)
-    report = json.loads((tmp_path / 'test_report.json').read_text())
+    report = json.loads((tmp_path / 'test_report.json').read_text(encoding='utf-8'))
     assert report['schema_version'] == 1
     assert report['statement'] == 'Simulation only; never flown.'
     assert report['environment']['python']
@@ -35,7 +35,7 @@ def test_rig_report(tmp_path):
             assert set(measured['metrics']['counts']) == {'10', '50', '200', '500'}
         assert (tmp_path / f"{test['id']}.log").exists()
     assert report['tests'][-1]['measured_result']['frozen_executable'] == 'checked by CI workflow'
-    markdown = (tmp_path / 'test_report.md').read_text()
+    markdown = (tmp_path / 'test_report.md').read_text(encoding='utf-8')
     assert 'Simulation only; never flown.' in markdown
     assert "applicant's responsibility" in markdown
     assert 'checked by CI workflow' in markdown

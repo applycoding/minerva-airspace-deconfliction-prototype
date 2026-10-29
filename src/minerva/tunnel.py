@@ -39,7 +39,7 @@ def _boundary_values(value):
 
 
 def export_tunnel_json(tunnel, out_path):
-    Path(out_path).write_text(json.dumps(_boundary_values(asdict(tunnel)), indent=2, allow_nan=False) + '\n')
+    Path(out_path).write_text(json.dumps(_boundary_values(asdict(tunnel)), indent=2, allow_nan=False) + '\n', encoding='utf-8')
 
 
 def export_tunnel_geojson(plan, out_path):
@@ -51,4 +51,4 @@ def export_tunnel_geojson(plan, out_path):
         geographic = transform(corridor, utm12n_to_lonlat, interleaved=False)
         properties = dict(plan_id=plan.plan_id, width_m=plan.tunnel.width_m, time_buf_s=plan.tunnel.time_buf_s, **asdict(segment))
         features.append(dict(type='Feature', geometry=mapping(geographic), properties=_boundary_values(properties)))
-    Path(out_path).write_text(json.dumps(dict(type='FeatureCollection', features=features), indent=2, allow_nan=False) + '\n')
+    Path(out_path).write_text(json.dumps(dict(type='FeatureCollection', features=features), indent=2, allow_nan=False) + '\n', encoding='utf-8')

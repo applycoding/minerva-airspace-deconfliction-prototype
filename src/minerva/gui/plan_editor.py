@@ -49,7 +49,7 @@ class PlanEditor(QWidget):
         self.values.setPlainText(json.dumps(data,indent=2))
 
     def import_json(self, path):
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding='utf-8'))
         self.plan_id = data.get('plan_id',uuid4().hex)
         self.callsign.setText(data.get('callsign','SIM')); self.priority.setValue(data.get('priority',2))
         self.values.setPlainText(json.dumps(data,indent=2))

@@ -26,7 +26,7 @@ def main():
         def finish():
             if args.marker_file:
                 args.marker_file.parent.mkdir(parents=True, exist_ok=True)
-                args.marker_file.write_text('MINERVA GUI smoke passed\n')
+                args.marker_file.write_text('MINERVA GUI smoke passed\n', encoding='utf-8')
             app.quit()
         QTimer.singleShot(2000, finish)
     return app.exec()

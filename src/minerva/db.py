@@ -31,7 +31,7 @@ def init_db(db_path):
     conn.row_factory = sqlite3.Row
     conn.execute('PRAGMA foreign_keys = ON')
     conn.execute('PRAGMA journal_mode = WAL')
-    conn.executescript(Path(__file__).with_name('schema.sql').read_text())
+    conn.executescript(Path(__file__).with_name('schema.sql').read_text(encoding='utf-8'))
     # Preserve operator overrides without changing the handbook columns.
     conn.execute('CREATE TABLE IF NOT EXISTS zone_overrides (zone_id TEXT PRIMARY KEY REFERENCES restricted_zones(zone_id) ON DELETE CASCADE, active INTEGER, ceiling_m REAL)')
     conn.commit()

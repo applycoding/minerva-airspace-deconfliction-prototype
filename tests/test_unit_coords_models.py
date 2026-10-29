@@ -47,10 +47,10 @@ def test_tunnel_bounds_exports(plan,tmp_path):
     assert (t.segments[0].low_m,t.segments[0].high_m,t.segments[0].start_epoch_s,t.segments[0].end_epoch_s)==(70.,190.,985.,1075.)
     jp,gp=tmp_path/'t.json',tmp_path/'t.geojson'
     export_tunnel_json(t,jp); export_tunnel_geojson(plan,gp)
-    out=json.loads(jp.read_text())
+    out=json.loads(jp.read_text(encoding='utf-8'))
     assert out['start_epoch_s']=='1970-01-01T00:16:25Z'
     assert out['width_m']==200.
-    geo=json.loads(gp.read_text())
+    geo=json.loads(gp.read_text(encoding='utf-8'))
     assert geo['type']=='FeatureCollection' and len(geo['features'])==2
     for feature, segment in zip(geo['features'],t.segments):
         geometry=shape(feature['geometry'])
