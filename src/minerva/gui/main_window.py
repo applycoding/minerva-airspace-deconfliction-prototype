@@ -2,10 +2,11 @@ from pathlib import Path
 from PySide6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QFileDialog, QPushButton, QLineEdit, QLabel
 from .. import db
 from ..resources import data_dir
-from ..ingest import load_zones_geojson, parse_weather_text, resolve_weather_for_window
+from ..ingest import load_zones_geojson, load_crewed_plans, parse_weather_text, resolve_weather_for_window
 from ..conflict import check_all_conflicts, SpatialIndex
 from ..planner import plan_4d_path
 from ..resolver import resolve_conflicts
+from ..models import WeatherObservation
 from .map_canvas import MapCanvas
 from .plan_editor import PlanEditor, epoch
 from .conflict_panel import ConflictPanel
@@ -17,14 +18,22 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('MINERVA — simulation only; never flown')
         self.resize(1200,850)
         self.conn = db.init_db(db.resolve_db_path(db_path))
-        self.zones = load_zones_geojson(data_dir()/'zones/suffield.geojson')
-        db.save_zones(self.conn,self.zones)
-        self.weather = parse_weather_text(data_dir()/'weather/cyxh_metar_calm.txt')
+        self.zones = db.list_zones(self.conn)
+        if not self.zones:
+            self.zones = load_zones_geojson(data_dir()/'zones/suffield.geojson')
+            db.save_zones(self.conn,self.zones)
+        self.weather = [db._from_row(WeatherObservation,row)
+                        for row in self.conn.execute('SELECT * FROM weather_observations ORDER BY obs_id')]
+        if not self.weather:
+            self.weather = parse_weather_text(data_dir()/'weather/cyxh_metar_calm.txt')
         self.candidate = None; self.conflicts = []
         self.editor = PlanEditor(); self.map_canvas = MapCanvas(); self.conflict_panel = ConflictPanel()
         central = QWidget(); layout = QHBoxLayout(central); layout.addWidget(self.editor,1)
         right = QVBoxLayout(); layout.addLayout(right,2); right.addWidget(self.map_canvas); right.addWidget(self.conflict_panel)
         self.weather_input = QLineEdit('0, 0, 0, 2026-01-01T00:00:00Z, 2027-01-01T00:00:00Z')
+        for title,action in [('Import crewed plans','crewed'),('Load METAR file','metar')]:
+            button = QPushButton(title); right.addWidget(button)
+            button.clicked.connect(lambda checked=False,a=action:self.safe_action(a))
         right.addWidget(QLabel('Explicit synthetic wind: from degrees, speed m/s, gust m/s, UTC start, UTC end'))
         right.addWidget(self.weather_input)
         wind_button = QPushButton('Use synthetic wind'); right.addWidget(wind_button)
@@ -37,6 +46,30 @@ class MainWindow(QMainWindow):
 
     def active(self):
         return db.list_active_plans(self.conn)
+
+    def ingest_crewed_file(self, path):
+        plans = load_crewed_plans(Path(path))
+        for plan in plans:
+            db.approve_and_persist_plan(self.conn,plan,db.get_db_revision(self.conn))
+        self.refresh()
+        return plans
+
+    def ingest_metar_file(self, path):
+        self.weather = parse_weather_text(Path(path))
+        # Loading a file replaces the selected observations, including stale files.
+        with self.conn:
+            self.conn.execute('DELETE FROM weather_observations')
+        db.save_weather(self.conn,self.weather)
+        return self.weather
+
+    def record_operator_decision(self, plan_id, decision):
+        if not decision.strip():
+            raise ValueError('Enter an operator decision')
+        import time
+        with self.conn:
+            self.conn.execute('INSERT INTO operator_decisions(epoch_s,plan_id,decision) VALUES (?,?,?)',
+                              (time.time(),plan_id,decision))
+        self.statusBar().showMessage(decision)
 
     def current_weather(self, plan):
         return resolve_weather_for_window(self.weather,plan.waypoints[0].epoch_s,plan.waypoints[-1].epoch_s)
@@ -89,7 +122,11 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage(str(error))
 
     def perform_action(self, action):
-        if action=='new': self.editor.new_plan()
+        if action in ('crewed','metar'):
+            path,_ = QFileDialog.getOpenFileName(self,'Load crewed plans' if action=='crewed' else 'Load METAR file')
+            if path:
+                return self.ingest_crewed_file(path) if action=='crewed' else self.ingest_metar_file(path)
+        elif action=='new': self.editor.new_plan()
         elif action=='plan': self.statusBar().showMessage(self.run_planner().message)
         elif action=='check': self.check_candidate()
         elif action=='resolve': self.statusBar().showMessage(self.resolve_candidate().summary)

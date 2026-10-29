@@ -8,8 +8,15 @@ def main():
     parser.add_argument('--gui-smoke', action='store_true')
     parser.add_argument('--marker-file', type=Path)
     parser.add_argument('--run-test-rig', action='store_true')
+    parser.add_argument('--run-trl5', action='store_true')
+    parser.add_argument('--scenarios', help='Comma-separated scenario IDs, for example S1,S3')
+    parser.add_argument('--require-sitl', action='store_true')
+    parser.add_argument('--sitl-dir', type=Path)
     parser.add_argument('--report-dir', type=Path, default=Path('reports'))
     args = parser.parse_args()
+    if args.run_trl5:
+        from minerva.trl5.runner import run_campaign
+        return run_campaign(args.report_dir,args.scenarios.split(',') if args.scenarios else None,args.require_sitl,args.sitl_dir)
     if args.self_check:
         from minerva.test_rig.runner import self_check
         return self_check()

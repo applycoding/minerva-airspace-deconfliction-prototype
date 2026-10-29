@@ -1,0 +1,22 @@
+{
+  "plans": [
+    {
+      "plan_id": "CREWED-POPUP-501",
+      "callsign": "CREWED-POPUP-501",
+      "waypoints": [
+        {
+          "lat_deg": 50.15547018214794,
+          "lon_deg": -111.39904991742894,
+          "altitude": "70 m",
+          "time_utc": "2026-10-29T16:00:01Z"
+        },
+        {
+          "lat_deg": 50.155517431984634,
+          "lon_deg": -111.38505163510592,
+          "altitude": "70 m",
+          "time_utc": "2026-10-29T16:01:11Z"
+        }
+      ]
+    }
+  ]
+}

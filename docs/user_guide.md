@@ -31,6 +31,9 @@ files for backup. Do not place it inside a read-only installation directory.
    wind line takes wind-from degrees, speed and gust in metres per second,
    followed by UTC start/end. Select Use synthetic wind to apply it. The bundled
    weather is sample data; it may not cover your chosen time.
+   Load METAR file selects an offline file with explicit UTC validity windows.
+   Import crewed plans loads the supported crewed JSON/text format into the
+   database. Both inputs persist across closing and reopening the application.
 4. Select Run planner. Inspect its status at the bottom of the window and the
    resulting map. Select Check conflicts and inspect the table.
 5. Resolve candidate tries departure time, altitude, route, then frequency
@@ -62,11 +65,17 @@ trajectory matching. Ambiguous tracks remain unassigned. Identifiers and signed
 frames are not authenticated.
 
 Drift is flagged after two consecutive reports outside the reserved corridor.
-Compute re-route prepares a proposal for the latest matched report. Inspect the
+Select a track in the live table or selector. The table shows each stream's
+plan association, conformance and LATERAL, VERTICAL or TEMPORAL violation.
+Compute re-route prepares a proposal for the selected matched report. Inspect the
 status, then select Accept re-route (operator confirmation) only after reviewing
 it. Acceptance separately replaces that plan in the database. A stale database
 revision requires computing and reviewing a new proposal. Stop receiver ends
 watching; closing the window also stops it. This does not command an aircraft.
+
+If computation has no solution, Record hold / land in place records the operator's
+simulated decision and closes the old reservation without approving an unsafe
+replacement. It sends no command to any aircraft.
 
 ## Checks and reports
 
@@ -75,3 +84,11 @@ seconds and can write a --marker-file. --run-test-rig --report-dir reports runs
 source verification and records failures as well as measured values. Read
 reports/test_report.md and docs/VERIFICATION.md together. A source GUI check
 using offscreen rendering does not establish that a frozen Windows window works.
+
+`--run-trl5 --report-dir DIR` runs the integrated simulation campaign. Use
+`--scenarios S1,S3` for an explicitly labelled subset. The report directory
+contains report.json, report.md, a self-contained report.html, screenshots,
+event logs and scenario databases. On Linux, the separate external flight
+simulator is required for a complete pass; `--require-sitl --sitl-dir DIR`
+returns exit 2 if it cannot run. On Windows that scenario is not applicable.
+See trl5_validation_plan.md and trl5_evidence.md for scope and measured evidence.

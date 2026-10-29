@@ -7,7 +7,7 @@ import time
 from shapely.geometry import LineString, Point, Polygon
 from .coords import lonlat_to_utm12n, utm12n_to_lonlat
 from .models import FlightPlan, Waypoint4D, PlannerResult, PlannerStatus
-from .conflict import check_all_conflicts, check_zone_conflicts
+from .conflict import check_all_conflicts, check_zone_conflicts, zone_polygon
 from .tunnel import build_tunnel
 
 WEIGHTS = {'shortest_time': (0., 0.), 'avoid_zones': (5., .5), 'avoid_radio': (.5, 8.)}
@@ -28,8 +28,10 @@ def solve_wind_triangle(airspeed_mps, azimuth_rad, wind_from_deg, wind_speed_mps
 def edge_cost(a, b, objective, zones, existing_plans):
     """Soft proximity costs; hard exclusions are always checked separately."""
     wz, wr = WEIGHTS[objective]
+    if not wz and not wr:
+        return b.epoch_s-a.epoch_s
     line = LineString(((a.x_m,a.y_m),(b.x_m,b.y_m)))
-    zone_risk = max((1./(1.+line.distance(Polygon(z.polygon_utm))/250.) for z in zones), default=0.)
+    zone_risk = max((1./(1.+line.distance(zone_polygon(tuple(z.polygon_utm)))/250.) for z in zones), default=0.) if wz else 0.
     radio_risk = max((1./(1.+line.distance(Point(p.radio.gcs_x_m,p.radio.gcs_y_m))/1000.) for p in existing_plans),default=0.)
     return (b.epoch_s-a.epoch_s)*(1+wz*zone_risk+wr*radio_risk)
 
@@ -66,6 +68,19 @@ def plan_4d_path(start_wp, goal_lat, goal_lon, goal_alt_m, limits, radio, object
     # Six cells of lateral detour and four vertical layers around the endpoints.
     nx,ny = math.ceil(abs(gx-sx)/step)+6,math.ceil(abs(gy-sy)/step)+6
     zlo,zhi = max(0.,min(start.alt_m,goal_alt_m)-4*alt_step_m),max(start.alt_m,goal_alt_m)+4*alt_step_m
+    collision_plans = []
+    for other in existing_plans:
+        oh,ov = (other.tunnel.horiz_half_width_m,other.tunnel.vert_margin_m) if other.tunnel else (0.,0.)
+        h,v = max(100.,100.+oh),max(30.,30.+ov)
+        radio_overlap = abs(radio.freq_mhz-other.radio.freq_mhz) < (radio.bw_mhz+other.radio.bw_mhz)/2+max(radio.guard_mhz,other.radio.guard_mhz)
+        far = (max(w.x_m for w in other.waypoints)+h < sx-nx*step
+               or min(w.x_m for w in other.waypoints)-h > sx+nx*step
+               or max(w.y_m for w in other.waypoints)+h < sy-ny*step
+               or min(w.y_m for w in other.waypoints)-h > sy+ny*step
+               or max(w.alt_m for w in other.waypoints)+v < zlo
+               or min(w.alt_m for w in other.waypoints)-v > zhi)
+        if radio_overlap or not far:
+            collision_plans.append(other)
     wind = weather.wind_speed_mps
     theta = math.radians(weather.wind_from_deg)
     wx,wy = -wind*math.sin(theta),-wind*math.cos(theta)
@@ -90,7 +105,7 @@ def plan_4d_path(start_wp, goal_lat, goal_lon, goal_alt_m, limits, radio, object
             if math.hypot(dx/duration-wx,dy/duration-wy) > limits.max_airspeed_mps+1e-9:
                 return None
         b = replace(b,epoch_s=a.epoch_s+duration)
-        if check_all_conflicts(plan([a,b]),existing_plans,zones,weather):
+        if check_all_conflicts(plan([a,b]),collision_plans,zones,weather):
             return None
         return b,heading
     serial = itertools.count()
@@ -98,11 +113,11 @@ def plan_4d_path(start_wp, goal_lat, goal_lon, goal_alt_m, limits, radio, object
     # Each retained label stores its own parent so later improvements cannot alter timing.
     labels = [(root,start,None,None,0.)]
     best = {root:0.}
-    queue = [(0.,next(serial),0)]
+    queue = [(0.,abs(start.alt_m-goal_alt_m),next(serial),0)]
     def heuristic(w):
-        return math.hypot(gx-w.x_m,gy-w.y_m)/(limits.max_airspeed_mps+wind)
+        return math.hypot(gx-w.x_m,gy-w.y_m)/(.85*limits.max_airspeed_mps+wind)
     while queue:
-        _,_,idx = heapq.heappop(queue)
+        _,_,_,idx = heapq.heappop(queue)
         state,a,previous,parent,cost = labels[idx]
         if cost != best.get(state):
             continue
@@ -125,7 +140,7 @@ def plan_4d_path(start_wp, goal_lat, goal_lon, goal_alt_m, limits, radio, object
         if terminal is not None:
             b,_ = terminal
             final_cost = cost+edge_cost(a,b,objective,zones,existing_plans)
-            heapq.heappush(queue,(final_cost,next(serial),len(labels)))
+            heapq.heappush(queue,(final_cost,0.,next(serial),len(labels)))
             labels.append((('goal',),b,None,idx,final_cost))
             best[('goal',)] = min(final_cost,best.get(('goal',),math.inf))
         options = range(8) if octant is None else ((octant-1)%8,octant,(octant+1)%8)
@@ -146,7 +161,7 @@ def plan_4d_path(start_wp, goal_lat, goal_lon, goal_alt_m, limits, radio, object
                     if newcost < best.get(new,math.inf):
                         best[new] = newcost
                         labels.append((new,b,heading,idx,newcost))
-                        heapq.heappush(queue,(newcost+heuristic(b),next(serial),len(labels)-1))
+                        heapq.heappush(queue,(newcost+heuristic(b),abs(b.alt_m-goal_alt_m),next(serial),len(labels)-1))
         if limits.hover_allowed and waits < 6:
             moved = transition(a,replace(a),previous)
             if moved:
@@ -156,5 +171,5 @@ def plan_4d_path(start_wp, goal_lat, goal_lon, goal_alt_m, limits, radio, object
                 if newcost < best.get(new,math.inf):
                     best[new] = newcost
                     labels.append((new,b,heading,idx,newcost))
-                    heapq.heappush(queue,(newcost+heuristic(b),next(serial),len(labels)-1))
+                    heapq.heappush(queue,(newcost+heuristic(b),abs(b.alt_m-goal_alt_m),next(serial),len(labels)-1))
     return result(PlannerStatus.NO_PATH_WITHIN_GRID)

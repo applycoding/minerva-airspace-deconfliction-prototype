@@ -48,6 +48,8 @@ def resolve_conflicts(candidate, active_plans, zones, weather, alternate_freqs_m
     if candidate.is_crewed or candidate.status in ('APPROVED','CREWED_ACTIVE'):
         return proposal('OPERATOR_ESCALATION',None,True)
     def checked(p):
+        if any(w.alt_m < 0 for w in p.waypoints):
+            return False
         p.tunnel = build_tunnel(p.plan_id,p.waypoints,
             candidate.tunnel.horiz_half_width_m if candidate.tunnel else 100.,
             candidate.tunnel.vert_margin_m if candidate.tunnel else 30.,

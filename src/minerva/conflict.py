@@ -2,6 +2,7 @@
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import math
+from functools import lru_cache
 from shapely import STRtree
 from shapely.geometry import box, Point, LineString, Polygon
 from .models import ConflictRecord
@@ -106,14 +107,24 @@ def check_radio_conflict(plan_a, plan_b):
     return records
 
 
+@lru_cache(maxsize=128)
+def zone_polygon(points):
+    return Polygon(points)
+
+
 def check_zone_conflicts(plan, zones):
     h,v,buf = _margins(plan)
     if plan.tunnel is None:
         h,v,buf = 100.,30.,15.
     records = []
+    legs = extend_waypoints_with_time_buffer(plan.waypoints,buf)
     for zone in zones:
-        polygon = Polygon(zone.polygon_utm)
-        for i,leg in enumerate(extend_waypoints_with_time_buffer(plan.waypoints,buf)):
+        polygon = zone_polygon(tuple(zone.polygon_utm))
+        xmin,ymin,xmax,ymax = polygon.bounds
+        if (max(w.x_m for w in plan.waypoints)+h < xmin or min(w.x_m for w in plan.waypoints)-h > xmax
+                or max(w.y_m for w in plan.waypoints)+h < ymin or min(w.y_m for w in plan.waypoints)-h > ymax):
+            continue
+        for i,leg in enumerate(legs):
             a,b = leg
             cuts = {a.epoch_s,b.epoch_s}
             if zone.seasonal_rule == 'CYR229':
@@ -170,6 +181,15 @@ def check_all_conflicts(candidate, active_plans, zones, weather, default_h_sep_m
         cb = _margins(other)
         h,v = max(default_h_sep_m,ca[0]+cb[0]),max(default_v_sep_m,ca[1]+cb[1])
         buf = max(default_t_buf_s,ca[2],cb[2])
+        a,b = candidate.waypoints,other.waypoints
+        if (a[-1].epoch_s+buf < b[0].epoch_s-buf or b[-1].epoch_s+buf < a[0].epoch_s-buf
+                or max(w.x_m for w in a)+h < min(w.x_m for w in b)
+                or max(w.x_m for w in b)+h < min(w.x_m for w in a)
+                or max(w.y_m for w in a)+h < min(w.y_m for w in b)
+                or max(w.y_m for w in b)+h < min(w.y_m for w in a)
+                or max(w.alt_m for w in a)+v < min(w.alt_m for w in b)
+                or max(w.alt_m for w in b)+v < min(w.alt_m for w in a)):
+            continue
         # Larger pair-specific holds require a fresh exhaustive leg view.
         indexed = index is not None and (other.plan_id,buf) in index.buffers
         other_legs = extend_waypoints_with_time_buffer(other.waypoints,buf)

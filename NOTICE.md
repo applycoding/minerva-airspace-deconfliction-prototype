@@ -20,6 +20,8 @@ packages are in THIRD_PARTY_LICENSES/ and are copied into the standalone bundle.
 | actions/checkout | v7 (v7.0.1) | MIT |
 | actions/setup-python | v7 (v7.1.0) | MIT |
 | actions/upload-artifact | v7 (v7.0.2) | MIT |
+| pymavlink (Linux test harness only, not distributed) | 2.4.50 | LGPL-3.0 |
+| ArduPilot Copter SITL (separate test program, never bundled or linked) | stable; run records version and SHA-256 | GPL-3.0 |
 
 The application imports no GPL library. PyInstaller is a packaging tool used
 under its bootloader exception. Dynamic Qt6/PySide6/shiboken6 LGPL-3.0 libraries
@@ -27,6 +29,13 @@ and GEOS LGPL-2.1 libraries remain separate shared library files in the onedir
 bundle. Users may inspect and replace these libraries with compatible versions.
 The evaluation-only permission does not restrict those rights. Keep the bundle
 layout when replacing libraries; no static linking is used.
+
+The Linux campaign imports pymavlink lazily inside its external test harness.
+PyInstaller explicitly excludes it. ArduPilot SITL is downloaded at test time,
+executes as a separate process and exchanges local telemetry and commands only.
+Neither SITL nor pymavlink is part of the distributed desktop bundle.
+Their source and licence notices are available at
+https://github.com/ArduPilot/pymavlink and https://github.com/ArduPilot/ardupilot.
 
 Upstream source: https://code.qt.io/, https://libgeos.org/,
 https://github.com/shapely/shapely, https://github.com/pyproj4/pyproj,

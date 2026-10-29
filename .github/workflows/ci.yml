@@ -44,6 +44,24 @@ jobs:
           python -m pytest -v --junitxml=reports/slices_1_to_4.xml
           python -m minerva --self-check
           python -m minerva --run-test-rig --report-dir reports
+      - name: Integrated scenarios from source
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m minerva --run-trl5 --report-dir reports/trl5/windows-2022-source
+      - name: Integrated scenarios from standalone outside checkout
+        shell: pwsh
+        run: |
+          $exe = (Resolve-Path 'dist/minerva/minerva.exe').Path
+          $report = Join-Path (Get-Location).Path 'reports/trl5/windows-2022'
+          $clean = Join-Path $env:RUNNER_TEMP 'minerva_trl5'
+          New-Item -ItemType Directory -Force $clean | Out-Null
+          $env:QT_QPA_PLATFORM = 'offscreen'
+          $env:PYTHONPATH = ''
+          $checkout = (Get-Location).Path
+          $env:PATH = (($env:PATH -split ';') | Where-Object { $_ -and -not $_.StartsWith($checkout) }) -join ';'
+          Set-Location $clean
+          & $exe --run-trl5 --report-dir $report
+          if ($LASTEXITCODE -ne 0) { throw 'Standalone integrated scenarios failed' }
       - name: Zip bundle
         run: Compress-Archive -Path dist/minerva -DestinationPath dist/minerva-windows.zip
       - uses: actions/upload-artifact@v7
@@ -75,6 +93,14 @@ jobs:
           python -m pytest -v
           python -m minerva --self-check
           python -m minerva --run-test-rig --report-dir reports
+      - name: Fetch external flight simulator
+        run: bash scripts/fetch_ardupilot_sitl.sh "$RUNNER_TEMP/ardupilot-sitl"
+      - name: Install test-only flight harness
+        run: python -m pip install pymavlink==2.4.50
+      - name: Integrated scenarios including external flight simulator
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m minerva --run-trl5 --report-dir reports/trl5/ubuntu-24.04 --require-sitl --sitl-dir "$RUNNER_TEMP/ardupilot-sitl"
       - uses: actions/upload-artifact@v7
         if: always()
         with:

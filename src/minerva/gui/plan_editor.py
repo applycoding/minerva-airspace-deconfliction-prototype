@@ -44,6 +44,8 @@ class PlanEditor(QWidget):
         self.plan_id = plan.plan_id
         self.callsign.setText(plan.callsign); self.priority.setValue(plan.priority)
         data = dict(limits=asdict(plan.limits),radio=asdict(plan.radio),waypoints=[asdict(w) for w in plan.waypoints])
+        if plan.tunnel:
+            data['tunnel_margins'] = dict(horiz_half_width_m=plan.tunnel.horiz_half_width_m,vert_margin_m=plan.tunnel.vert_margin_m,time_buf_s=plan.tunnel.time_buf_s)
         for w in data['waypoints']:
             w['epoch_s'] = datetime.fromtimestamp(w['epoch_s'],timezone.utc).isoformat().replace('+00:00','Z')
         self.values.setPlainText(json.dumps(data,indent=2))
@@ -64,5 +66,5 @@ class PlanEditor(QWidget):
         radio = RadioSpec(**data['radio']); radio.gcs_x_m,radio.gcs_y_m = lonlat_to_utm12n(radio.gcs_lon_deg,radio.gcs_lat_deg)
         plan = FlightPlan(self.plan_id,self.callsign.text(),self.priority.value(),'DRAFT',datetime.now(timezone.utc).timestamp(),DroneLimits(**data['limits']),radio,points,None)
         validate_plan_invariants(plan)
-        plan.tunnel = build_tunnel(plan.plan_id,points)
+        plan.tunnel = build_tunnel(plan.plan_id,points,**data.get('tunnel_margins',{}))
         return plan

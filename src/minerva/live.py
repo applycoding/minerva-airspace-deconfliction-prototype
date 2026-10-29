@@ -31,7 +31,7 @@ def encode_mavlink_v2_frame(msgid, payload, sysid=1, compid=1, seq=0):
     return b'\xfd' + header + payload + struct.pack('<H', crc16_mcrf4xx(header + payload, extra))
 
 
-def parse_mavlink_v2_datagram(datagram):
+def parse_mavlink_v2_datagram(datagram, statistics=None):
     messages, dropped, pos = [], 0, 0
     while pos < len(datagram):
         if datagram[pos] != 0xfd or len(datagram)-pos < 12:
@@ -42,6 +42,8 @@ def parse_mavlink_v2_datagram(datagram):
         frame = datagram[pos:pos+size]
         pos += size
         msgid = int.from_bytes(frame[7:10], 'little')
+        if len(frame)==size and not flags & ~1 and msgid not in _MESSAGES and statistics is not None:
+            statistics['ignored_other_message_ids'] = statistics.get('ignored_other_message_ids',0)+1
         if len(frame) != size or flags & ~1 or msgid not in _MESSAGES:
             dropped += 1
             continue
@@ -82,6 +84,34 @@ class TrackReport:
     plan_id: str | None
     outside: bool = False
     drift: bool = False
+    violation_type: str | None = None
+    received_perf_s: float = 0.0
+    processed_perf_s: float = 0.0
+    gui_perf_s: float = 0.0
+
+
+def conformance_violation(plan, waypoint):
+    """Classify spatial exits and along-path lateness against the 4D clearance."""
+    tunnel = plan.tunnel or build_tunnel(plan.plan_id,plan.waypoints)
+    expected = interpolate(plan,waypoint.epoch_s)
+    if abs(waypoint.alt_m-expected.alt_m) > tunnel.vert_margin_m:
+        return 'VERTICAL'
+    closest = None
+    for a,b in zip(plan.waypoints,plan.waypoints[1:]):
+        dx,dy = b.x_m-a.x_m,b.y_m-a.y_m
+        squared = dx*dx+dy*dy
+        f = min(1.,max(0.,((waypoint.x_m-a.x_m)*dx+(waypoint.y_m-a.y_m)*dy)/squared)) if squared else 0.
+        distance = math.hypot(waypoint.x_m-a.x_m-f*dx,waypoint.y_m-a.y_m-f*dy)
+        item = (distance,abs(waypoint.epoch_s-(a.epoch_s+f*(b.epoch_s-a.epoch_s))))
+        if closest is None or item < closest:
+            closest = item
+    if closest[0] > tunnel.horiz_half_width_m:
+        return 'LATERAL'
+    if (waypoint.epoch_s < plan.waypoints[0].epoch_s-tunnel.time_buf_s
+            or waypoint.epoch_s > plan.waypoints[-1].epoch_s+tunnel.time_buf_s
+            or (closest[1] > tunnel.time_buf_s and math.hypot(waypoint.x_m-expected.x_m,waypoint.y_m-expected.y_m) > tunnel.horiz_half_width_m)):
+        return 'TEMPORAL'
+    return None
 
 
 class LiveTracker:
@@ -92,9 +122,11 @@ class LiveTracker:
         self.streams = {}
         self.alerts = []
         self.dropped_frames = 0
+        self.parser_statistics = {}
 
-    def process_datagram(self, datagram, source_addr):
-        messages, dropped = parse_mavlink_v2_datagram(datagram)
+    def process_datagram(self, datagram, source_addr, received_perf_s=None):
+        received_perf_s = time.perf_counter() if received_perf_s is None else received_perf_s
+        messages, dropped = parse_mavlink_v2_datagram(datagram,self.parser_statistics)
         self.dropped_frames += dropped
         reports = []
         for msg in messages:
@@ -123,14 +155,16 @@ class LiveTracker:
                     else:
                         status = TrackMatchStatus.AMBIGUOUS
             outside = False
+            violation = None
             if plan:
                 expected = interpolate(plan,epoch)
                 tunnel = plan.tunnel or build_tunnel(plan.plan_id,plan.waypoints)
-                outside = (math.hypot(x-expected.x_m,y-expected.y_m)>tunnel.horiz_half_width_m or abs(wp.alt_m-expected.alt_m)>tunnel.vert_margin_m or epoch<plan.waypoints[0].epoch_s-tunnel.time_buf_s or epoch>plan.waypoints[-1].epoch_s+tunnel.time_buf_s)
+                violation = conformance_violation(plan,wp)
+                outside = violation is not None
             state['outside'] = state['outside']+1 if outside else 0
-            report = TrackReport(key,wp,status,plan.plan_id if plan else None,outside,state['outside']>=2)
+            report = TrackReport(key,wp,status,plan.plan_id if plan else None,outside,state['outside']>=2,violation,received_perf_s,time.perf_counter())
             if state['outside']==2:
-                self.alerts.append(ConflictRecord(uuid4().hex,'LIVE_DRIFT',plan.plan_id,'',epoch,epoch,math.hypot(x-expected.x_m,y-expected.y_m),abs(wp.alt_m-expected.alt_m),None,'ALERT','Two consecutive reports outside tunnel; not authenticated'))
+                self.alerts.append(ConflictRecord(uuid4().hex,'LIVE_DRIFT',plan.plan_id,'',epoch,epoch,math.hypot(x-expected.x_m,y-expected.y_m),abs(wp.alt_m-expected.alt_m),None,'ALERT',f'{violation}: two consecutive reports outside tunnel; not authenticated'))
             reports.append(report)
         return reports
 
@@ -141,7 +175,8 @@ class LiveTracker:
         result = plan_4d_path(report.waypoint,goal.lat_deg,goal.lon_deg,goal.alt_m,original.limits,original.radio,'shortest_time',zones,[p for p in active_plans if p.plan_id!=original.plan_id],weather)
         if result.plan:
             result.plan = replace(result.plan,plan_id=uuid4().hex,callsign=original.callsign,priority=original.priority,status='DRAFT')
-            result.plan.tunnel = build_tunnel(result.plan.plan_id,result.plan.waypoints)
+            t = original.tunnel or build_tunnel(original.plan_id,original.waypoints)
+            result.plan.tunnel = build_tunnel(result.plan.plan_id,result.plan.waypoints,t.horiz_half_width_m,t.vert_margin_m,t.time_buf_s)
         return result
 
     def accept_reroute(self, conn, result, original_plan_id, expected_revision):
@@ -168,7 +203,8 @@ class UDPReceiver:
                 data, address = self.socket.recvfrom(65535)
             except BlockingIOError:
                 return reports
-            reports.extend(tracker.process_datagram(data,address))
+            received = time.perf_counter()
+            reports.extend(tracker.process_datagram(data,address,received))
 
     def close(self):
         self.socket.close()

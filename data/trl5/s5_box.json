@@ -1,0 +1,22 @@
+{
+  "plans": [
+    {
+      "plan_id": "CREWED-WALL-502",
+      "callsign": "CREWED-WALL-502",
+      "waypoints": [
+        {
+          "lat_deg": 50.150188963374816,
+          "lon_deg": -111.36401317477655,
+          "altitude": "70 m",
+          "time_utc": "2026-10-29T16:00:00Z"
+        },
+        {
+          "lat_deg": 50.15018900724142,
+          "lon_deg": -111.36399917799757,
+          "altitude": "70 m",
+          "time_utc": "2026-10-29T16:20:00Z"
+        }
+      ]
+    }
+  ]
+}

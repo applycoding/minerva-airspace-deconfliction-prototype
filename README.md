@@ -45,6 +45,23 @@ checks are checked by CI workflow; source results do not establish their outcome
 The tests need loopback UDP sockets; a restricted host can prevent those tests.
 See [actual verification results](docs/VERIFICATION.md).
 
+The integrated campaign runs the actual desktop application, SQLite files and
+loopback UDP scenarios and writes JSON, Markdown, an offline HTML report,
+screenshots and event logs:
+
+```text
+python -m minerva --run-trl5 --report-dir reports/trl5/local
+python -m minerva --run-trl5 --report-dir reports/trl5/local --scenarios S1,S3
+```
+
+On Linux, add `--require-sitl --sitl-dir DIR` to require the separate external
+flight simulator and its copter.parm. That harness alone needs pymavlink 2.4.50;
+neither is included in the desktop bundle. Windows runs S1-S5 and records S6
+as not applicable. Missing Linux SITL is not a pass. See the
+[campaign specification](docs/trl5_validation_plan.md) and
+[available campaign evidence](docs/trl5_evidence.md). An uninstalled source
+checkout can use PYTHONPATH=src. Local measurements do not replace Windows CI.
+
 ## Evidence and limits
 
 The verification tests are engineering evidence offered towards the readiness-level

@@ -1,0 +1,22 @@
+{
+  "plans": [
+    {
+      "plan_id": "CREWED-101",
+      "callsign": "CREWED-101",
+      "waypoints": [
+        {
+          "lat_deg": 50.16978583749294,
+          "lon_deg": -111.42017339155093,
+          "altitude": "150 ft",
+          "time_utc": "2026-10-29T16:02:00Z"
+        },
+        {
+          "lat_deg": 50.16983564308977,
+          "lon_deg": -111.40617096378163,
+          "altitude": "150 ft",
+          "time_utc": "2026-10-29T16:03:40Z"
+        }
+      ]
+    }
+  ]
+}

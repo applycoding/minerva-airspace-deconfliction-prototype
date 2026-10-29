@@ -1,0 +1,40 @@
+{
+  "plans": [
+    {
+      "plan_id": "CREWED-201",
+      "callsign": "CREWED-201",
+      "waypoints": [
+        {
+          "lat_deg": 50.23993507546189,
+          "lon_deg": -111.4207897023651,
+          "altitude": "300 ft",
+          "time_utc": "2026-10-29T16:00:00Z"
+        },
+        {
+          "lat_deg": 50.23998500440358,
+          "lon_deg": -111.40676673722167,
+          "altitude": "300 ft",
+          "time_utc": "2026-10-29T16:10:00Z"
+        }
+      ]
+    },
+    {
+      "plan_id": "CREWED-202",
+      "callsign": "CREWED-202",
+      "waypoints": [
+        {
+          "lat_deg": 50.24005672524717,
+          "lon_deg": -111.38573221718782,
+          "altitude": "120 m",
+          "time_utc": "2026-10-29T16:00:00Z"
+        },
+        {
+          "lat_deg": 50.24010242408105,
+          "lon_deg": -111.37170915756953,
+          "altitude": "120 m",
+          "time_utc": "2026-10-29T16:10:00Z"
+        }
+      ]
+    }
+  ]
+}

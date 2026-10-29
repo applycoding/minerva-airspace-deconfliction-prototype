@@ -11,7 +11,9 @@ a = Analysis(
            (str(root / 'LICENSE'), '.'), (str(root / 'NOTICE.md'), '.'),
            (str(root / 'src/minerva/schema.sql'), 'minerva')]
           + collect_data_files('pyproj'),
-    hiddenimports=['minerva.gui.map_canvas', 'minerva.gui.plan_editor', 'minerva.gui.conflict_panel', 'minerva.gui.live_panel', 'minerva.live', 'minerva.test_rig.sim'], hookspath=[], hooksconfig={}, runtime_hooks=[], excludes=[],
+    hiddenimports=['minerva.gui.map_canvas', 'minerva.gui.plan_editor', 'minerva.gui.conflict_panel', 'minerva.gui.live_panel', 'minerva.live', 'minerva.test_rig.sim',
+                   'minerva.trl5.runner', 'minerva.trl5.gui_driver', 'minerva.trl5.scenarios', 'minerva.trl5.oracle_audit', 'minerva.trl5.report_writer', 'minerva.trl5.sitl_harness'],
+    hookspath=[], hooksconfig={}, runtime_hooks=[], excludes=['pymavlink'],
     noarchive=False,
 )
 pyz = PYZ(a.pure)
